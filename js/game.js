@@ -1,0 +1,150 @@
+﻿
+const POLLUTION_CAP = 100;
+const CYCLE_DAYS = 4;
+// "sortPollution" tracks pollution from category mix alone (no overage-for-
+// quantity penalty). Cycles that never hit the pollution cap are split into
+// great/normal using this cleaner signal, since the quantity-overage penalty
+// compounds hard across 4 days and would otherwise swamp the comparison.
+const GREAT_TIER_MAX = 40;
+
+
+function catById(id){ return WASTE_CATEGORIES.find(function(c){ return c.id === id; }); }
+function groupByIdx(idx){ return EGG_GROUPS[idx]; }
+
+function emptyBreakdown(){
+  const o = {};
+  WASTE_CATEGORIES.forEach(function(c){ o[c.id] = 0; });
+  return o;
+}
+
+function randomGroupIdx(excludeIdx){
+  const pool = [0,1,2].filter(function(i){ return i !== excludeIdx; });
+  const list = pool.length ? pool : [0,1,2];
+  return list[Math.floor(Math.random() * list.length)];
+}
+
+function freshState(prevGroupIdx){
+  return {
+    day: 1,
+    todayGrams: 0,
+    cycleBreakdown: emptyBreakdown(),
+    pollution: 0,
+    sortPollution: 0,
+    eco: 0,
+    isBadLocked: false,
+    groupIdx: randomGroupIdx(prevGroupIdx),
+    pathIndex: null,
+    finalIndex: null,
+  };
+}
+
+// Ratio of "good" (recycle/paper/compost) grams within a breakdown object,
+// used to weight the branch decisions. Neutral 0.5 if nothing fed yet.
+function goodRatio(breakdown){
+  const good = (breakdown.recycle||0) + (breakdown.paper||0) + (breakdown.compost||0);
+  const total = WASTE_CATEGORIES.reduce(function(s,c){ return s + (breakdown[c.id]||0); }, 0);
+  if (total <= 0) return 0.5;
+  return good / total;
+}
+
+function weightedPick(weights){
+  const total = weights.reduce(function(a,b){ return a+b; }, 0);
+  let r = Math.random() * total;
+  for (let i=0;i<weights.length;i++){
+    if (r < weights[i]) return i;
+    r -= weights[i];
+  }
+  return weights.length - 1;
+}
+
+// Called exactly at the day1->day2 transition (cycleBreakdown at this
+// moment reflects day1 only). Mostly behavior-driven, with some randomness.
+function resolvePathBranch(state){
+  if (state.isBadLocked){ state.pathIndex = 2; return; }
+  const r = goodRatio(state.cycleBreakdown);
+  const w0 = 15 + 70*r;        // favored by good day-1 sorting
+  const w2 = 15 + 70*(1-r);    // favored by messy day-1 sorting
+  const w1 = 35;               // steady middle option
+  state.pathIndex = weightedPick([w0, w1, w2]);
+}
+
+// Called at cycle completion. Uses the whole cycle's ratio to weight
+// between the 2 finals under whichever path was chosen at day 2.
+function resolveFinalBranch(state){
+  if (state.isBadLocked){ state.finalIndex = 1; return; }
+  const r = goodRatio(state.cycleBreakdown);
+  const w0 = 20 + 60*r;
+  const w1 = 100 - w0;
+  state.finalIndex = weightedPick([w0, w1]);
+}
+
+function currentSlot(state){
+  if (state.pathIndex === null) return groupByIdx(state.groupIdx).slot;
+  const path = PATH_LAYOUT[state.groupIdx][state.pathIndex];
+  if (state.finalIndex === null) return path.slot;
+  return path.finals[state.finalIndex];
+}
+
+// Extra pollution for the portion of today's total that falls between
+// the national average and 2x average, and a steeper rate beyond that.
+// Applied only to the slice of *this* feed's grams that crosses each
+// bracket, so a single large feed is charged correctly even if it
+// straddles a threshold.
+function overagePollution(beforeGrams, afterGrams){
+  let extra = 0;
+  const seg1Start = Math.max(beforeGrams, SOFT_LIMIT_G), seg1End = Math.min(afterGrams, HARD_LIMIT_G);
+  if (seg1End > seg1Start) extra += (seg1End - seg1Start) * 0.15;
+  const seg2Start = Math.max(beforeGrams, HARD_LIMIT_G), seg2End = afterGrams;
+  if (seg2End > seg2Start) extra += (seg2End - seg2Start) * 0.35;
+  return extra;
+}
+
+function applyFeed(state, categoryId){
+  const cat = catById(categoryId);
+  const grams = cat.gramsPerClick;
+  state.cycleBreakdown[categoryId] = (state.cycleBreakdown[categoryId] || 0) + grams;
+  const before = state.todayGrams;
+  const after = before + grams;
+  state.todayGrams = after;
+  state.eco += grams * cat.ecoRate;
+  const baseGain = grams * cat.pollutionRate;
+  state.sortPollution += baseGain;
+  let gain = baseGain;
+  gain += overagePollution(before, after);
+  state.pollution = Math.min(POLLUTION_CAP, state.pollution + gain);
+  if (state.pollution >= POLLUTION_CAP) state.isBadLocked = true;
+  return state;
+}
+
+// Which of the 3 final forms a completed cycle earns.
+function resultTier(state){
+  if (state.isBadLocked) return 'bad';
+  if (state.sortPollution <= GREAT_TIER_MAX) return 'great';
+  return 'normal';
+}
+
+function warningLevel(state){
+  if (state.todayGrams > HARD_LIMIT_G || state.pollution >= 85) return 2;
+  if (state.todayGrams > SOFT_LIMIT_G || state.pollution >= 60) return 1;
+  return 0;
+}
+
+function cycleTotal(state){
+  return WASTE_CATEGORIES.reduce(function(sum,c){ return sum + (state.cycleBreakdown[c.id]||0); }, 0);
+}
+
+function formatGrams(g){
+  return Math.round(g).toLocaleString('ja-JP') + 'g';
+}
+
+/* ============================================================
+   App state (in memory, mirrors storage)
+   ============================================================ */
+let STATE = null;         // current cycle state
+let LIFETIME = null;      // lifetime waste totals
+let COLLECTION = {};      // dex entries
+let ACTIVE_TAB = 'raise';
+let TOAST_TIMER = null;
+let BAD_ALERT_SHOWN = false;
+
+function collectionKey(speciesId, form){ return speciesId + '_' + form; }

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>ワケモン - ごみ分別モンスター育成</title>
+<meta name="description" content="分別して育てる、SDGsモンスター育成ゲーム" />
+<meta name="theme-color" content="#2F6F5E" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="ワケモン" />
+<link rel="manifest" href="manifest.json" />
+<link rel="icon" href="icons/icon-192.png" />
+<link rel="apple-touch-icon" href="icons/icon-192.png" />
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+<div id="titleScreen" class="title-screen">
+  <div class="title-sky">
+    <div class="title-sun"></div>
+    <div class="title-cloud c1"></div>
+    <div class="title-cloud c2"></div>
+    <div class="title-logo">ワケ<span>モン</span></div>
+    <div class="title-tagline">分別して育てる、SDGsモンスター図鑑</div>
+    <div class="title-monster-wrap" id="titleMonsterWrap">
+      <div id="titleMonsterStage"></div>
+      <div class="title-shadow"></div>
+    </div>
+  </div>
+  <div class="title-ground">
+    <div class="title-tap">-tap to start-</div>
+  </div>
+</div>
+
+<div id="app">
+  <div class="brand">
+    <div>
+      <h1>ワケ<span>モン</span></h1>
+      <div class="sub">分別して育てる、SDGsモンスター図鑑</div>
+    </div>
+    <button class="reset-btn" id="resetBtn" title="データをリセット">⚙️</button>
+  </div>
+
+  <div class="lifetime-banner" id="lifetimeBanner"></div>
+
+  <div id="raiseView"></div>
+  <div id="dexView" style="display:none;"></div>
+</div>
+
+<div id="modalRoot"></div>
+<div id="feedModalRoot"></div>
+
+<script src="js/data/waste.js"></script>
+<script src="js/data/monsters.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/game.js"></script>
+<script src="js/render.js"></script>
+<script src="js/ui/modal.js"></script>
+<script src="js/ui/raise.js"></script>
+<script src="js/ui/dex.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
