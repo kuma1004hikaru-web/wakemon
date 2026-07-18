@@ -39,6 +39,7 @@ const CUSTOM_ART = {
   2:  'assets/art/slot-2.png',
   3:  'assets/art/slot-3.png',
   4:  'assets/art/slot-4.png',
+  10: 'assets/art/slot-10.png',
   11: 'assets/art/slot-11.png',
   15: 'assets/art/slot-15.png',
   18: 'assets/art/slot-18.png',
