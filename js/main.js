@@ -78,6 +78,14 @@ async function finishCycle(){
     COLLECTION[key] = { count: 0, firstDate: new Date().toISOString() };
   }
   COLLECTION[key].count += 1;
+  // Also register the 2〜3日目 (mid-tier) form this cycle grew through, so it
+  // stops being a dex silhouette once actually raised.
+  const midSlot = PATH_LAYOUT[STATE.groupIdx][STATE.pathIndex].slot;
+  const midKey = 'slot' + midSlot;
+  if (!COLLECTION[midKey]){
+    COLLECTION[midKey] = { count: 0, firstDate: new Date().toISOString() };
+  }
+  COLLECTION[midKey].count += 1;
   flushPendingSave();
   await saveCollection(COLLECTION);
 
@@ -118,6 +126,7 @@ function setTab(tab){
   document.getElementById('raiseView').style.display = tab === 'raise' ? 'block' : 'none';
   document.getElementById('dexView').style.display = tab === 'dex' ? 'block' : 'none';
   document.body.classList.toggle('raise-fullscreen', tab === 'raise');
+  document.body.classList.toggle('dex-fullscreen', tab === 'dex');
   if (tab === 'dex') renderDexView();
   if (tab === 'raise') renderRaiseView();
 }

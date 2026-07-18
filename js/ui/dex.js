@@ -32,7 +32,7 @@ function dexThumbHTML(groupIdx, pathIndex, finalIndex, slot){
 const GROUP_META = {
   forest: { icon:'🍃', label:'はっぱタイプ' },
   river:  { icon:'💧', label:'みずタイプ' },
-  earth:  { icon:'⛰️', label:'だいちタイプ' },
+  earth:  { icon:'🔥', label:'ほのおタイプ' },
 };
 
 // Which spread of the dex book is open (one egg group per spread).
@@ -43,9 +43,12 @@ let DEX_PAGE = 0;
 // The curled arrows turn the page to the next/previous group.
 // Uncaught finals are silhouettes.
 function renderDexView(){
-  const totalSlots = allFinalSlots().length;
-  const obtainedCount = Object.keys(COLLECTION).length;
-  const raisedCount = Object.keys(COLLECTION).reduce(function(sum,k){ return sum + COLLECTION[k].count; }, 0);
+  // Counts are over final forms only; mid-tier slots are also stored in
+  // COLLECTION (to un-silhouette them) but must not inflate these totals.
+  const finalKeys = allFinalSlots().map(function(n){ return 'slot' + n.slot; });
+  const totalSlots = finalKeys.length;
+  const obtainedCount = finalKeys.filter(function(k){ return COLLECTION[k]; }).length;
+  const raisedCount = finalKeys.reduce(function(sum,k){ return sum + (COLLECTION[k] ? COLLECTION[k].count : 0); }, 0);
 
   const gi = DEX_PAGE;
   const g = EGG_GROUPS[gi];
@@ -67,11 +70,14 @@ function renderDexView(){
         '<div class="sub">'+(entry ? tierIcon(tier)+' '+entry.count+'回' : '？？？')+'</div>' +
       '</div>';
     });
+    // Mid-tier (2〜3日目) forms stay silhouettes until raised at least once.
+    const midKey = 'slot' + path.slot;
+    const midSeen = !!COLLECTION[midKey];
     rows += '<div class="dex-row">' +
-      '<div class="dex-node mid">' +
+      '<div class="dex-node mid '+(midSeen ? '' : 'locked')+'">' +
         '<div class="thumb">'+dexThumbHTML(gi, pi, null, path.slot)+'</div>' +
         '<b>No.'+path.slot+'</b>' +
-        '<div class="sub">2〜3日目</div>' +
+        '<div class="sub">'+(midSeen ? '2〜3日目' : '？？？')+'</div>' +
       '</div>' +
       '<div class="dex-arrow">➜</div>' +
       '<div class="dex-finals">'+finals+'</div>' +
