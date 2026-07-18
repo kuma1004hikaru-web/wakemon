@@ -28,59 +28,91 @@ function dexThumbHTML(groupIdx, pathIndex, finalIndex, slot){
   return blobSVG(nodeLike, 1.0, tier, finalIndex === 1, null);
 }
 
-// Dex as an evolution tree: per egg group, one row per path showing
-// mid-tier form -> its two finals, so it's clear where every monster
-// sits in the correlation diagram. Uncaught finals are silhouettes.
+// Friendly type names per egg-group shape, used as the book's chapter names.
+const GROUP_META = {
+  forest: { icon:'🍃', label:'はっぱタイプ' },
+  river:  { icon:'💧', label:'みずタイプ' },
+  earth:  { icon:'⛰️', label:'だいちタイプ' },
+};
+
+// Which spread of the dex book is open (one egg group per spread).
+let DEX_PAGE = 0;
+
+// Dex as an open picture book: left page = the group's egg and stats,
+// right page = that group's evolution tree (mid form -> two finals).
+// The curled arrows turn the page to the next/previous group.
+// Uncaught finals are silhouettes.
 function renderDexView(){
   const totalSlots = allFinalSlots().length;
   const obtainedCount = Object.keys(COLLECTION).length;
   const raisedCount = Object.keys(COLLECTION).reduce(function(sum,k){ return sum + COLLECTION[k].count; }, 0);
 
-  let groupsHtml = '';
-  EGG_GROUPS.forEach(function(g, gi){
-    let rows = '';
-    PATH_LAYOUT[gi].forEach(function(path, pi){
-      const tier = tierForPath(pi);
-      let finals = '';
-      path.finals.forEach(function(slotNum, fi){
-        const key = 'slot' + slotNum;
-        const entry = COLLECTION[key];
-        finals += '<div class="dex-node final '+(entry ? tier : 'locked')+'"'+(entry ? ' data-key="'+key+'"' : '')+'>' +
-          '<div class="thumb">'+dexThumbHTML(gi, pi, fi, slotNum)+'</div>' +
-          '<b>No.'+slotNum+'</b>' +
-          '<div class="sub">'+(entry ? tierIcon(tier)+' '+entry.count+'回育成' : '？？？')+'</div>' +
-        '</div>';
-      });
-      rows += '<div class="dex-row">' +
-        '<div class="dex-node mid">' +
-          '<div class="thumb">'+dexThumbHTML(gi, pi, null, path.slot)+'</div>' +
-          '<b>No.'+path.slot+'</b>' +
-          '<div class="sub">2〜3日目</div>' +
-        '</div>' +
-        '<div class="dex-arrow">➜</div>' +
-        '<div class="dex-finals">'+finals+'</div>' +
+  const gi = DEX_PAGE;
+  const g = EGG_GROUPS[gi];
+  const meta = GROUP_META[g.shape] || { icon:'❔', label:g.baby };
+
+  let rows = '';
+  let groupTotal = 0, groupObtained = 0;
+  PATH_LAYOUT[gi].forEach(function(path, pi){
+    const tier = tierForPath(pi);
+    let finals = '';
+    path.finals.forEach(function(slotNum, fi){
+      const key = 'slot' + slotNum;
+      const entry = COLLECTION[key];
+      groupTotal++;
+      if (entry) groupObtained++;
+      finals += '<div class="dex-node final '+(entry ? tier : 'locked')+'"'+(entry ? ' data-key="'+key+'"' : '')+'>' +
+        '<div class="thumb">'+dexThumbHTML(gi, pi, fi, slotNum)+'</div>' +
+        '<b>No.'+slotNum+'</b>' +
+        '<div class="sub">'+(entry ? tierIcon(tier)+' '+entry.count+'回' : '？？？')+'</div>' +
       '</div>';
     });
-    groupsHtml += '<div class="dex-group">' +
-      '<div class="dex-group-head"><span class="dex-egg">'+dexThumbHTML(gi, null, null, g.slot)+'</span>'+g.baby+'のなかま（No.'+g.slot+'）</div>' +
-      rows +
+    rows += '<div class="dex-row">' +
+      '<div class="dex-node mid">' +
+        '<div class="thumb">'+dexThumbHTML(gi, pi, null, path.slot)+'</div>' +
+        '<b>No.'+path.slot+'</b>' +
+        '<div class="sub">2〜3日目</div>' +
+      '</div>' +
+      '<div class="dex-arrow">➜</div>' +
+      '<div class="dex-finals">'+finals+'</div>' +
     '</div>';
   });
 
   const html = '' +
-  '<div class="card">' +
-    '<button class="back-btn" id="dexBackBtn">← もどる</button>' +
-    '<div class="graph-title"><span>ずかん登録数</span><b>'+obtainedCount+' / '+totalSlots+'</b></div>' +
-    '<div class="dex-legend">たまごから 2〜3日目のすがたを経て、かんせい形（4日目）に分かれるよ。「？？？」はまだ出会っていないモンスター。</div>' +
-    groupsHtml +
-    '<div class="lifetime-box">' +
-      '<div><b>'+raisedCount+'</b>育てたモンスター</div>' +
-      '<div><b>'+formatGrams(LIFETIME.recycle+LIFETIME.paper+LIFETIME.compost)+'</b>資源に回した量</div>' +
+  '<button class="back-btn" id="dexBackBtn">← もどる</button>' +
+  '<div class="dex-book">' +
+    '<div class="dex-pages">' +
+      '<div class="page page-left">' +
+        '<div class="dex-total">ずかん '+obtainedCount+' / '+totalSlots+'</div>' +
+        '<div class="page-egg">'+dexThumbHTML(gi, null, null, g.slot)+'</div>' +
+        '<div class="page-type">'+meta.icon+' '+meta.label+'</div>' +
+        '<div class="page-progress">みつけた ： '+groupObtained+' / '+groupTotal+'</div>' +
+        '<div class="page-stats">' +
+          '<div><b>'+raisedCount+'</b>ひき 育てた</div>' +
+          '<div><b>'+formatGrams(LIFETIME.recycle+LIFETIME.paper+LIFETIME.compost)+'</b> 資源に回した</div>' +
+        '</div>' +
+        '<div class="page-note">「？？？」はまだ<br>出会っていないよ</div>' +
+        '<button class="page-turn prev" id="dexPrevBtn" title="前のページ">↶</button>' +
+      '</div>' +
+      '<div class="page page-right">' +
+        '<div class="page-head">'+meta.icon+' '+meta.label+'</div>' +
+        rows +
+        '<button class="page-turn next" id="dexNextBtn" title="次のページ">↷</button>' +
+      '</div>' +
     '</div>' +
+    '<div class="page-num">- '+(gi+1)+' / '+EGG_GROUPS.length+' -</div>' +
   '</div>';
 
   document.getElementById('dexView').innerHTML = html;
   document.getElementById('dexBackBtn').addEventListener('click', function(){ setTab('raise'); });
+  document.getElementById('dexPrevBtn').addEventListener('click', function(){
+    DEX_PAGE = (DEX_PAGE + EGG_GROUPS.length - 1) % EGG_GROUPS.length;
+    renderDexView();
+  });
+  document.getElementById('dexNextBtn').addEventListener('click', function(){
+    DEX_PAGE = (DEX_PAGE + 1) % EGG_GROUPS.length;
+    renderDexView();
+  });
 
   document.querySelectorAll('.dex-node.final[data-key]').forEach(function(el){
     el.addEventListener('click', function(){ showDexDetail(el.getAttribute('data-key')); });
