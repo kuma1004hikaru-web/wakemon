@@ -99,21 +99,28 @@ function overagePollution(beforeGrams, afterGrams){
   return extra;
 }
 
-function applyFeed(state, categoryId){
-  const cat = catById(categoryId);
-  const grams = cat.gramsPerClick;
-  state.cycleBreakdown[categoryId] = (state.cycleBreakdown[categoryId] || 0) + grams;
+// Extra pollution per gram when a trash item is sorted into the wrong
+// category. The trash itself still counts toward its true category
+// (it physically exists either way); the miss just makes it dirtier
+// and forfeits the eco points.
+const MISSORT_PENALTY_RATE = 0.15;
+
+function applySortedFeed(state, item, chosenCategoryId){
+  const cat = catById(item.categoryId);
+  const grams = item.grams;
+  const correct = chosenCategoryId === item.categoryId;
+  state.cycleBreakdown[item.categoryId] = (state.cycleBreakdown[item.categoryId] || 0) + grams;
   const before = state.todayGrams;
   const after = before + grams;
   state.todayGrams = after;
-  state.eco += grams * cat.ecoRate;
-  const baseGain = grams * cat.pollutionRate;
+  if (correct) state.eco += grams * cat.ecoRate;
+  const baseGain = grams * cat.pollutionRate + (correct ? 0 : grams * MISSORT_PENALTY_RATE);
   state.sortPollution += baseGain;
   let gain = baseGain;
   gain += overagePollution(before, after);
   state.pollution = Math.min(POLLUTION_CAP, state.pollution + gain);
   if (state.pollution >= POLLUTION_CAP) state.isBadLocked = true;
-  return state;
+  return correct;
 }
 
 // Which of the 3 final forms a completed cycle earns.

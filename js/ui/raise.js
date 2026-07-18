@@ -136,11 +136,44 @@ function renderGraph(){
     '<div class="graph">'+cols+'</div>';
 }
 
-function renderFeedButtons(){
+/* ------------------------------------------------------------
+   Feed sorting quiz state: a few concrete trash items are offered
+   ("which trash came out?"), then the player picks which category
+   it belongs to. Correct -> normal feed + eco. Wrong -> pollution
+   penalty + the right answer is shown.
+   ------------------------------------------------------------ */
+let FEED_PICK = [];       // current random trash choices
+let FEED_SELECTED = null; // item id being sorted, or null (pick mode)
+let FEED_RESULT = null;   // { correct, item } feedback from the last answer
+
+function rollFeedPick(){
+  const pool = TRASH_ITEMS.slice();
+  for (let i = pool.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    const t = pool[i]; pool[i] = pool[j]; pool[j] = t;
+  }
+  FEED_PICK = pool.slice(0, 4);
+}
+
+function renderTrashButtons(){
+  let html = '<div class="trash-grid">';
+  FEED_PICK.forEach(function(t){
+    // neutral tile color so the button itself doesn't leak the answer
+    html += '<button class="feed-tile" data-trash="'+t.id+'" style="--tile-color:#8A8577;">' +
+      '<div class="feed-gram">'+t.grams+'g</div>' +
+      '<div class="feed-icon">'+t.icon+'</div>' +
+      '<b>'+t.name+'</b>' +
+      '<span>どこにすてる？</span>' +
+    '</button>';
+  });
+  html += '</div>';
+  return html;
+}
+
+function renderSortCategoryButtons(){
   let html = '<div class="feed-grid">';
   WASTE_CATEGORIES.forEach(function(c){
-    html += '<button class="feed-tile" data-cat="'+c.id+'" style="--tile-color:'+c.color+';">' +
-      '<div class="feed-gram">+'+c.gramsPerClick+'g</div>' +
+    html += '<button class="feed-tile" data-sort-cat="'+c.id+'" style="--tile-color:'+c.color+';">' +
       '<div class="feed-icon">'+c.icon+'</div>' +
       '<b>'+c.label+'</b>' +
       '<span>'+c.sub+'</span>' +
@@ -150,16 +183,46 @@ function renderFeedButtons(){
   return html;
 }
 
+function renderSortFeedback(){
+  if (!FEED_RESULT) return '';
+  const item = FEED_RESULT.item;
+  const cat = catById(item.categoryId);
+  if (FEED_RESULT.correct){
+    return '<div class="sort-feedback good"><span>⭕</span><div><b>せいかい！</b>' +
+      item.name + 'は「' + cat.label + '」。' + item.hint + '</div></div>';
+  }
+  return '<div class="sort-feedback bad"><span>❌</span><div><b>ざんねん…</b>' +
+    item.name + 'は「' + cat.label + '」だよ。' + item.hint +
+    ' まちがえたぶん、よごれ度が上がってしまった…</div></div>';
+}
+
 /* ============================================================
    Feed modal (bottom sheet): graph + tiles + day-advance action
    ============================================================ */
 function renderFeedModalBody(){
   const isLastDay = STATE.day >= CYCLE_DAYS;
+
+  // step 2: category question for the chosen trash item
+  if (FEED_SELECTED){
+    const item = trashById(FEED_SELECTED);
+    return '' +
+      '<div class="sort-question">' +
+        '<div class="sort-item-big">'+item.icon+'</div>' +
+        '<div class="pick-title">「'+item.name+'」('+item.grams+'g)は<br>どこに分別する？</div>' +
+      '</div>' +
+      renderSortCategoryButtons() +
+      '<button class="back-btn sort-back" id="sortBackBtn">← ほかのごみにする</button>';
+  }
+
+  // step 1: which trash came out?
   return '' +
     '<div class="scene-toast" id="toast"></div>' +
+    renderSortFeedback() +
+    '<div class="pick-title">🗑️ どのごみが出たかな？</div>' +
+    renderTrashButtons() +
+    '<button class="shuffle-btn" id="shuffleTrashBtn">🔄 ほかのごみを見る</button>' +
+    '<div style="height:12px;"></div>' +
     renderGraph() +
-    '<div style="height:14px;"></div>' +
-    renderFeedButtons() +
     '<button class="primary-btn" id="nextDayBtn">'+(isLastDay ? '🌟 モンスターをかんせいさせる！' : '🌙 今日を終えて次の日へ')+'</button>';
 }
 
@@ -174,13 +237,36 @@ function renderFeedModalShell(){
 }
 
 function attachFeedModalBodyHandlers(){
-  document.querySelectorAll('.feed-tile').forEach(function(btn){
-    btn.addEventListener('click', function(){ onFeed(btn.getAttribute('data-cat')); });
+  document.querySelectorAll('[data-trash]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      FEED_SELECTED = btn.getAttribute('data-trash');
+      refreshFeedModalBody();
+    });
   });
-  document.getElementById('nextDayBtn').addEventListener('click', onNextDay);
+  document.querySelectorAll('[data-sort-cat]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      onSortAnswer(FEED_SELECTED, btn.getAttribute('data-sort-cat'));
+    });
+  });
+  const backBtn = document.getElementById('sortBackBtn');
+  if (backBtn) backBtn.addEventListener('click', function(){
+    FEED_SELECTED = null;
+    refreshFeedModalBody();
+  });
+  const shuffleBtn = document.getElementById('shuffleTrashBtn');
+  if (shuffleBtn) shuffleBtn.addEventListener('click', function(){
+    rollFeedPick();
+    FEED_RESULT = null;
+    refreshFeedModalBody();
+  });
+  const nextBtn = document.getElementById('nextDayBtn');
+  if (nextBtn) nextBtn.addEventListener('click', onNextDay);
 }
 
 function openFeedModal(){
+  rollFeedPick();
+  FEED_SELECTED = null;
+  FEED_RESULT = null;
   document.getElementById('feedModalRoot').innerHTML = renderFeedModalShell();
   attachFeedModalBodyHandlers();
   document.getElementById('feedModalCloseBtn').addEventListener('click', closeFeedModal);
@@ -243,6 +329,31 @@ function attachRaiseHandlers(){
   document.getElementById('dexBigBtn').addEventListener('click', function(){ setTab('dex'); });
   document.getElementById('miniHud').addEventListener('click', openStatsDetail);
   document.getElementById('sceneSettingsBtn').addEventListener('click', resetAll);
+}
+
+/* ------------------------------------------------------------
+   Evolution effect: white flash + sparkles over the scene while the
+   monster bounces, then `done` runs (typically a re-render showing
+   the new form, or the completion modal).
+   ------------------------------------------------------------ */
+function playEvolveEffect(done){
+  const panel = document.querySelector('.scene-panel');
+  const zone = document.getElementById('sceneMonsterZone');
+  if (!panel || !zone){ done(); return; }
+  const overlay = document.createElement('div');
+  overlay.className = 'evo-overlay';
+  let html = '<div class="evo-flash"></div>';
+  for (let i = 0; i < 7; i++){
+    html += '<span class="evo-star" style="left:'+(10 + i*12)+'%; top:'+(30 + ((i*23)%34))+'%; animation-delay:'+(i*0.09)+'s;">✨</span>';
+  }
+  overlay.innerHTML = html;
+  panel.appendChild(overlay);
+  zone.classList.add('evolving');
+  setTimeout(function(){
+    overlay.remove();
+    zone.classList.remove('evolving');
+    done();
+  }, 1400);
 }
 
 function renderLifetimeBanner(){

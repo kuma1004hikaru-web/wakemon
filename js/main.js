@@ -10,18 +10,23 @@ function showToast(text){
   TOAST_TIMER = setTimeout(function(){ toast.classList.remove('show'); }, 2600);
 }
 
-async function onFeed(categoryId){
+async function onSortAnswer(itemId, categoryId){
   if (STATE.day > CYCLE_DAYS) return;
-  const cat = catById(categoryId);
+  const item = trashById(itemId);
+  if (!item) return;
   const wasBad = STATE.isBadLocked;
-  applyFeed(STATE, categoryId);
-  LIFETIME[categoryId] = (LIFETIME[categoryId] || 0) + cat.gramsPerClick;
+  const correct = applySortedFeed(STATE, item, categoryId);
+  LIFETIME[item.categoryId] = (LIFETIME[item.categoryId] || 0) + item.grams;
+
+  // back to the pick screen with fresh choices + feedback banner
+  FEED_SELECTED = null;
+  FEED_RESULT = { correct: correct, item: item };
+  rollFeedPick();
 
   scheduleSaveGameData();
   renderRaiseView();
   refreshFeedModalBody();
   renderLifetimeBanner();
-  showToast('+'+cat.gramsPerClick+'g（'+cat.unit+'くらい） '+cat.tip);
 
   if (!wasBad && STATE.isBadLocked && !BAD_ALERT_SHOWN){
     BAD_ALERT_SHOWN = true;
@@ -35,6 +40,7 @@ async function onFeed(categoryId){
 
 async function onNextDay(){
   if (STATE.day < CYCLE_DAYS){
+    const stageBefore = stageForDay(STATE.day);
     const enteringDay2 = STATE.day === 1;
     STATE.day += 1;
     STATE.todayGrams = 0;
@@ -44,7 +50,13 @@ async function onNextDay(){
     flushPendingSave();
     await saveGameData({ state: STATE, lifetime: LIFETIME });
     closeFeedModal();
-    renderRaiseView();
+    if (stageForDay(STATE.day) > stageBefore){
+      // the monster grows into a new stage: play the effect over the old
+      // look, then re-render to reveal the new form
+      playEvolveEffect(function(){ renderRaiseView(); });
+    } else {
+      renderRaiseView();
+    }
   } else {
     await finishCycle();
   }
@@ -73,26 +85,29 @@ async function finishCycle(){
   const finishedGroupIdx = STATE.groupIdx;
   const eyebrow = tier === 'great' ? '🌟 かんぺき！' : (tier === 'normal' ? '🎉 完成！' : '…完成');
 
-  openModal(
-    eyebrow,
-    placeholderName,
-    placeholderDesc,
-    [
-      { label:'このサイクルのごみ合計', value: formatGrams(total) },
-      { label:'リサイクル度', value: Math.round(STATE.eco) + ' pt' }
-    ],
-    tier,
-    monsterSVG(STATE, 3),
-    [{ text:'次のモンスターへ →', action: function(){
-        closeModal();
-        BAD_ALERT_SHOWN = false;
-        STATE = freshState(finishedGroupIdx);
-        flushPendingSave();
-        saveGameData({ state: STATE, lifetime: LIFETIME });
-        renderRaiseView();
-        renderDexView();
-      }, primary:true }]
-  );
+  // evolution flourish over the scene, then the reveal modal
+  playEvolveEffect(function(){
+    openModal(
+      eyebrow,
+      placeholderName,
+      placeholderDesc,
+      [
+        { label:'このサイクルのごみ合計', value: formatGrams(total) },
+        { label:'リサイクル度', value: Math.round(STATE.eco) + ' pt' }
+      ],
+      tier,
+      monsterSVG(STATE, 3),
+      [{ text:'次のモンスターへ →', action: function(){
+          closeModal();
+          BAD_ALERT_SHOWN = false;
+          STATE = freshState(finishedGroupIdx);
+          flushPendingSave();
+          saveGameData({ state: STATE, lifetime: LIFETIME });
+          renderRaiseView();
+          renderDexView();
+        }, primary:true }]
+    );
+  });
 }
 
 /* ============================================================
@@ -150,7 +165,8 @@ function showIntro2(){
       '<div class="modal-eyebrow">あそびかた</div>' +
       '<h2 class="good">4日間で1匹そだてよう</h2>' +
       '<ul class="intro-list">' +
-        '<li>🍱 ごみを種類ごとにボタンでモンスターにあげる（1回ごとに実際のグラム数が加算されるよ）</li>' +
+        '<li>🍱 出てきたごみを選んで、どこに分別するかクイズに答えよう。正解すると上手に育つよ（実際のグラム数が加算される）</li>' +
+        '<li>❌ 分別をまちがえるとよごれ度が上がるけど、正しい分別方法を教えてもらえるよ</li>' +
         '<li>⚖️ 全国平均「1人1日475g」（環境省調べ）を超えると警告、2倍(950g)に近づくと危険！</li>' +
         '<li>🌟 分別バッチリ・出しすぎなしなら「かんぺき」、ほどほどなら「ふつう」、出しすぎ＆分別ミスが重なると「はずれ」になるよ</li>' +
         '<li>📊 出したごみの量はグラム表示のグラフでいつでも確認できるよ</li>' +

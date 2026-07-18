@@ -442,9 +442,12 @@
     position:absolute; left:0; right:0; top:52%; z-index:2;
     text-align:center; font-size:12px; color:var(--pine-dark); opacity:0.75;
   }
+  /* Sits at title-screen level (not inside .title-sky, whose overflow:hidden
+     used to clip it) so the monster stands on the grass in front of
+     everything else. */
   .title-monster-wrap{
-    position:absolute; left:50%; bottom:-8%; transform:translate(-50%,0) scale(0.82);
-    z-index:3; opacity:0; transition:opacity .5s ease, transform .5s ease;
+    position:absolute; left:50%; bottom:22%; transform:translate(-50%,0) scale(0.82);
+    z-index:10; opacity:0; transition:opacity .5s ease, transform .5s ease;
   }
   .title-monster-wrap.ready{ opacity:1; transform:translate(-50%,0) scale(1); }
   .title-monster-wrap .title-shadow{
@@ -452,6 +455,9 @@
     background:rgba(0,0,0,0.12); filter:blur(2px);
   }
   .title-monster-wrap svg{ width:min(52vw, 260px); height:auto; display:block; }
+  .title-monster-wrap .custom-art-wrap{ width:min(56vw, 270px); }
+  .title-monster-wrap .custom-art-wrap img{ height:auto; }
+  .title-monster-wrap .slot-badge-overlay{ display:none; }
   .title-tap{
     font-family:'JetBrains Mono',monospace; font-weight:500; font-size:16px;
     color:var(--pine-dark); margin-bottom:14%; letter-spacing:1px;
@@ -460,6 +466,90 @@
   @keyframes tap-pulse{
     0%,100%{ opacity:0.5; } 50%{ opacity:1; }
   }
+  /* ---- evolution effect ---- */
+  .evo-overlay{ position:absolute; inset:0; z-index:6; pointer-events:none; overflow:hidden; }
+  .evo-flash{
+    position:absolute; inset:0;
+    background:radial-gradient(circle at 50% 55%, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.55) 45%, transparent 75%);
+    animation:evo-flash 1.4s ease forwards;
+  }
+  @keyframes evo-flash{
+    0%{ opacity:0; } 25%{ opacity:1; } 60%{ opacity:1; } 100%{ opacity:0; }
+  }
+  .evo-star{
+    position:absolute; font-size:22px; opacity:0;
+    animation:evo-star 1.25s ease-out forwards;
+  }
+  @keyframes evo-star{
+    0%{ transform:translateY(24px) scale(0.4); opacity:0; }
+    30%{ opacity:1; }
+    100%{ transform:translateY(-80px) scale(1.2); opacity:0; }
+  }
+  .scene-monster-zone.evolving{ animation:evo-bounce 1.4s ease; }
+  @keyframes evo-bounce{
+    0%{ transform:scale(1); }
+    20%{ transform:scale(0.85) rotate(-4deg); }
+    45%{ transform:scale(1.14) rotate(3deg); }
+    70%{ transform:scale(0.96); }
+    100%{ transform:scale(1); }
+  }
+
+  /* ---- feed sorting quiz ---- */
+  .trash-grid{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .pick-title{
+    font-family:'Zen Maru Gothic',sans-serif; font-weight:700; font-size:14px;
+    color:var(--pine-dark); text-align:center; margin:4px 0 10px; line-height:1.5;
+  }
+  .sort-question{ text-align:center; }
+  .sort-item-big{ font-size:46px; line-height:1.2; margin-top:2px; }
+  .sort-feedback{
+    display:flex; gap:8px; align-items:flex-start;
+    border-radius:14px; padding:10px 12px; margin-bottom:10px;
+    font-size:12.5px; line-height:1.65;
+  }
+  .sort-feedback.good{ background:#E8F6E3; color:#25543F; border:1.5px solid #BCE3B0; }
+  .sort-feedback.bad{ background:#FBE9E4; color:#8C3116; border:1.5px solid #F3C9BD; }
+  .shuffle-btn{
+    display:block; margin:10px auto 0; border:none; background:#EAEFE3;
+    color:var(--pine-dark); font-family:'Zen Maru Gothic',sans-serif; font-weight:700;
+    font-size:12px; padding:8px 16px; border-radius:999px; cursor:pointer;
+  }
+  .shuffle-btn:active{ transform:scale(0.96); }
+  .sort-back{ margin-top:12px; margin-bottom:0; }
+
+  /* ---- dex evolution tree ---- */
+  .dex-legend{ font-size:10.5px; color:var(--ink-soft); margin:6px 0 2px; line-height:1.6; }
+  .dex-group{ margin:16px 0 6px; }
+  .dex-group-head{
+    display:flex; align-items:center; gap:8px;
+    font-family:'Zen Maru Gothic',sans-serif; font-weight:700; font-size:13px;
+    color:var(--pine-dark); margin-bottom:6px;
+    border-bottom:2px solid var(--line); padding-bottom:6px;
+  }
+  .dex-egg{ width:36px; height:36px; display:flex; align-items:center; justify-content:center; }
+  .dex-egg svg, .dex-egg img{ width:36px; height:36px; object-fit:contain; }
+  .dex-row{ display:flex; align-items:center; gap:6px; margin:10px 0; }
+  .dex-node{
+    background:#FBFCF8; border:2px solid var(--line); border-radius:14px;
+    padding:6px 4px 5px; width:88px; flex:0 0 auto; text-align:center;
+  }
+  .dex-node .thumb{ width:60px; height:60px; margin:0 auto; display:flex; align-items:center; justify-content:center; }
+  .dex-node .thumb img, .dex-node .thumb svg{ width:60px; height:60px; object-fit:contain; display:block; }
+  .dex-node b{ display:block; font-family:'JetBrains Mono',monospace; font-size:11px; margin-top:3px; }
+  .dex-node .sub{ font-size:9.5px; color:var(--ink-soft); margin-top:1px; }
+  .dex-node.final{ cursor:pointer; transition:transform .12s ease; }
+  .dex-node.final:active{ transform:scale(0.95); }
+  .dex-node.locked{ cursor:default; }
+  .dex-node.locked .thumb img, .dex-node.locked .thumb svg{ filter:brightness(0); opacity:0.32; }
+  .dex-node.great{ border-color:#F4B740; background:#FFFBEF; }
+  .dex-node.normal{ border-color:#BCD9CE; }
+  .dex-node.bad{ border-color:#C9CBBE; background:#F4F4EF; }
+  .dex-arrow{ color:var(--pine); font-weight:700; font-size:14px; flex:0 0 auto; }
+  .dex-finals{ display:flex; gap:6px; flex:1; min-width:0; }
+
   @media (prefers-reduced-motion: reduce){
     .title-cloud, .title-tap{ animation:none; }
+    .scene-monster-zone.evolving{ animation:none; }
+    .evo-flash{ animation-duration:.5s; }
+    .evo-star{ animation-duration:.5s; }
   }

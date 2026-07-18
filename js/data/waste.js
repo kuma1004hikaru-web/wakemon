@@ -30,3 +30,40 @@ const WASTE_CATEGORIES = [
 const SOFT_LIMIT_G = 475;         // national average (household waste, per person/day)
 const HARD_LIMIT_G = SOFT_LIMIT_G * 2; // 2x average — danger zone
 const AVG_SOURCE_LABEL = '環境省(令和5年度)調べ：家庭ごみの全国平均は1人1日475g';
+
+// えさやりクイズに出てくる具体的なごみ。categoryId が正解の分別先で、
+// grams はそのごみ1つぶんのだいたいの重さ。
+const TRASH_ITEMS = [
+  { id:'petbottle', name:'ペットボトル', icon:'🧴', grams:25,  categoryId:'recycle',
+    hint:'キャップとラベルを外して資源ごみへ！服やバッグに生まれ変わるよ。' },
+  { id:'can',       name:'あきかん',     icon:'🥫', grams:15,  categoryId:'recycle',
+    hint:'軽くすすいで出そう。何度でも新しい缶になれるよ。' },
+  { id:'bin',       name:'あきびん',     icon:'🍾', grams:200, categoryId:'recycle',
+    hint:'びんはくり返し使えるリサイクルの優等生！' },
+  { id:'newspaper', name:'しんぶんし',   icon:'📰', grams:100, categoryId:'paper',
+    hint:'ひもでしばって紙ごみへ。トイレットペーパーになるよ。' },
+  { id:'cardboard', name:'だんボール',   icon:'📦', grams:150, categoryId:'paper',
+    hint:'たたんで重ねて紙ごみへ。新しいダンボールになるよ。' },
+  { id:'flyer',     name:'チラシ1まい',  icon:'📄', grams:5,   categoryId:'paper',
+    hint:'きれいな紙は紙ごみでリサイクルできるよ。' },
+  { id:'leftover',  name:'たべのこし',   icon:'🍚', grams:150, categoryId:'compost',
+    hint:'茶わん1ぱいで約150g。堆肥になるけど、残さず食べるのがいちばん！' },
+  { id:'banana',    name:'バナナのかわ', icon:'🍌', grams:30,  categoryId:'compost',
+    hint:'生ごみは水気をよく切ってから出そう。' },
+  { id:'vegscraps', name:'やさいのくず', icon:'🥬', grams:50,  categoryId:'compost',
+    hint:'コンポストに入れると畑の栄養になるよ。' },
+  { id:'tissue',    name:'よごれたティッシュ', icon:'🧻', grams:10, categoryId:'burnable',
+    hint:'汚れた紙はリサイクルできないから燃えるごみへ。' },
+  { id:'snackbag',  name:'おかしのふくろ', icon:'🍬', grams:10, categoryId:'burnable',
+    hint:'食べもので汚れたふくろは燃えるごみ。地域のルールも見てみよう。' },
+  { id:'papercup',  name:'よごれた紙コップ', icon:'🥤', grams:10, categoryId:'burnable',
+    hint:'汚れた紙コップは紙ごみにできないんだ。燃えるごみへ。' },
+  { id:'brokencup', name:'われた茶わん', icon:'🍵', grams:250, categoryId:'nonburnable',
+    hint:'割れものは新聞紙に包んで「キケン」と書いて出そう。' },
+  { id:'umbrella',  name:'こわれたかさ', icon:'☂️', grams:400, categoryId:'nonburnable',
+    hint:'金属の骨は燃えないごみ。直して長く使えたらもっといいね。' },
+  { id:'battery',   name:'かんでんち',   icon:'🔋', grams:25,  categoryId:'nonburnable',
+    hint:'電池は回収ボックスがある町も多いよ。お店で聞いてみよう。' },
+];
+
+function trashById(id){ return TRASH_ITEMS.find(function(t){ return t.id === id; }); }
