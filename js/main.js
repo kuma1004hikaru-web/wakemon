@@ -23,19 +23,58 @@ async function onSortAnswer(itemId, categoryId){
   FEED_RESULT = { correct: correct, item: item };
   rollFeedPick();
 
+  // Failure: pollution just maxed out → the run ends right now and the
+  // monster turns into this type's ハズレ (No.31/32/33).
+  if (!wasBad && STATE.isBadLocked){
+    flushPendingSave();
+    renderLifetimeBanner();
+    await failCycle();
+    return;
+  }
+
   scheduleSaveGameData();
   renderRaiseView();
   refreshFeedModalBody();
   renderLifetimeBanner();
+}
 
-  if (!wasBad && STATE.isBadLocked && !BAD_ALERT_SHOWN){
-    BAD_ALERT_SHOWN = true;
-    setTimeout(function(){
-      openModal('注意', 'モンスターが汚れてしまった…', 'ごみの量が多くなりすぎたよ。今のサイクルはこのまま「はずれモンスター」で完成するけど、次のモンスターではごみを減らして挑戦してみよう。',
-        null, 'bad', null,
-        [{ text:'わかった', action: closeModal, primary:true }]);
-    }, 300);
+async function failCycle(){
+  closeFeedModal();
+  const gi = STATE.groupIdx;
+  const hazSlot = hazureSlotForGroup(gi);
+  const key = 'slot' + hazSlot;
+  if (!COLLECTION[key]){
+    COLLECTION[key] = { count: 0, firstDate: new Date().toISOString() };
   }
+  COLLECTION[key].count += 1;
+  flushPendingSave();
+  await saveCollection(COLLECTION);
+
+  const total = cycleTotal(STATE);
+  const finishedGroupIdx = gi;
+
+  renderRaiseView(); // show the current monster, then break it down with the effect
+  playEvolveEffect(function(){
+    openModal(
+      '…そだて しっぱい',
+      'No.' + hazSlot,
+      'ごみを出しすぎたり、分別をまちがえすぎて、モンスターが「ハズレ」に変わってしまった…。育成はここで終わり。次はごみを減らして、正しく分別してみよう！',
+      [
+        { label:'このサイクルのごみ合計', value: formatGrams(total) }
+      ],
+      'bad',
+      hazureArtHTML(gi),
+      [{ text:'次のモンスターへ →', action: function(){
+          closeModal();
+          BAD_ALERT_SHOWN = false;
+          STATE = freshState(finishedGroupIdx);
+          flushPendingSave();
+          saveGameData({ state: STATE, lifetime: LIFETIME });
+          renderRaiseView();
+          renderDexView();
+        }, primary:true }]
+    );
+  });
 }
 
 async function onNextDay(){
@@ -64,6 +103,9 @@ async function onNextDay(){
 
 async function finishCycle(){
   closeFeedModal();
+  // Normally failure ends the run mid-feed; this covers a save that was
+  // already maxed out before reaching day 4.
+  if (STATE.isBadLocked){ await failCycle(); return; }
   if (STATE.pathIndex === null) resolvePathBranch(STATE); // safety net
   resolveFinalBranch(STATE);
 

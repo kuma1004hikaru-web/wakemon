@@ -611,6 +611,17 @@
   .dex-arrow{ color:var(--ink); font-weight:700; font-size:15px; flex:0 0 auto; }
   .dex-finals{ display:flex; gap:8px; flex:1; min-width:0; justify-content:flex-end; }
 
+  /* ハズレ枠: separate from the tree, under a dashed divider */
+  .dex-hazure{
+    display:flex; align-items:center; gap:8px;
+    margin-top:14px; padding-top:12px; border-top:2px dashed #E4A79A;
+  }
+  .dex-hazure-label{
+    font-family:'Zen Maru Gothic',sans-serif; font-weight:700; font-size:11.5px;
+    color:#8C3116; line-height:1.5; flex:1;
+  }
+  .dex-node.hazure{ border-color:#E4A79A; background:#FBEEEA; }
+
   @media (prefers-reduced-motion: reduce){
     .title-cloud, .title-tap{ animation:none; }
     .scene-monster-zone.evolving{ animation:none; }

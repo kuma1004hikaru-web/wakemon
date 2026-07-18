@@ -62,3 +62,9 @@ const PATH_LAYOUT = [
   [ { slot:12, finals:[15,16] }, { slot:13, finals:[17,18] }, { slot:14, finals:[19,20] } ],
   [ { slot:22, finals:[25,26] }, { slot:23, finals:[27,28] }, { slot:24, finals:[29,30] } ],
 ];
+
+// ハズレ（育成失敗）モンスター。進化ツリーには入らない、タイプごとの
+// 失敗枠。並びは EGG_GROUPS と同じ（はっぱ / みず / ほのお）。育成中に
+// よごれ度が最大に達すると、そのタイプのハズレに変わって育成が終了する。
+const HAZURE_SLOTS = [31, 32, 33];
+function hazureSlotForGroup(gi){ return HAZURE_SLOTS[gi]; }

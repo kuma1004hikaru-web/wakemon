@@ -175,6 +175,17 @@ function customArtHTML(slotNumber){
     '</div>';
 }
 
+// The type's ハズレ (failure) monster: real art if provided, otherwise a
+// muddy "bad"-tier procedural blob as a placeholder.
+function hazureArtHTML(groupIdx){
+  const slot = hazureSlotForGroup(groupIdx);
+  const custom = customArtHTML(slot);
+  if (custom) return custom;
+  const group = EGG_GROUPS[groupIdx];
+  const nodeLike = { id: group.shape, color:'#8C8A6A', accessory: group.accessory };
+  return blobSVG(nodeLike, 1.0, 'bad', false, null);
+}
+
 // Renders whatever should be on screen right now for a given cycle state:
 // day1 egg -> day2/3 path (mid-tier) look -> day4 completion final look.
 // Real uploaded art (CUSTOM_ART) takes priority; otherwise falls back to

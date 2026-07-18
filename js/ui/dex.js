@@ -43,11 +43,14 @@ let DEX_PAGE = 0;
 // The curled arrows turn the page to the next/previous group.
 // Uncaught finals are silhouettes.
 function renderDexView(){
-  // Counts are over final forms only; mid-tier slots are also stored in
-  // COLLECTION (to un-silhouette them) but must not inflate these totals.
+  // "みつけた" totals count the collectible endpoints: final forms + each
+  // type's ハズレ. Mid-tier slots are also stored in COLLECTION (to
+  // un-silhouette them) but must not inflate these totals.
   const finalKeys = allFinalSlots().map(function(n){ return 'slot' + n.slot; });
-  const totalSlots = finalKeys.length;
-  const obtainedCount = finalKeys.filter(function(k){ return COLLECTION[k]; }).length;
+  const hazureKeys = HAZURE_SLOTS.map(function(s){ return 'slot' + s; });
+  const collectibleKeys = finalKeys.concat(hazureKeys);
+  const totalSlots = collectibleKeys.length;
+  const obtainedCount = collectibleKeys.filter(function(k){ return COLLECTION[k]; }).length;
   const raisedCount = finalKeys.reduce(function(sum,k){ return sum + (COLLECTION[k] ? COLLECTION[k].count : 0); }, 0);
 
   const gi = DEX_PAGE;
@@ -84,6 +87,23 @@ function renderDexView(){
     '</div>';
   });
 
+  // Separate ハズレ (failure) slot for this type — never inside the tree.
+  const hazSlot = hazureSlotForGroup(gi);
+  const hazKey = 'slot' + hazSlot;
+  const hazEntry = COLLECTION[hazKey];
+  groupTotal++;
+  if (hazEntry) groupObtained++;
+  const hazHtml = '' +
+    '<div class="dex-hazure">' +
+      '<div class="dex-hazure-label">💀 そだてに<br>しっぱいすると…</div>' +
+      '<div class="dex-arrow">➜</div>' +
+      '<div class="dex-node hazure '+(hazEntry ? 'bad' : 'locked')+'"'+(hazEntry ? ' data-key="'+hazKey+'"' : '')+'>' +
+        '<div class="thumb">'+hazureArtHTML(gi)+'</div>' +
+        '<b>No.'+hazSlot+'</b>' +
+        '<div class="sub">'+(hazEntry ? '💀 '+hazEntry.count+'回' : '？？？')+'</div>' +
+      '</div>' +
+    '</div>';
+
   const html = '' +
   '<button class="back-btn" id="dexBackBtn">← もどる</button>' +
   '<div class="dex-book">' +
@@ -97,6 +117,7 @@ function renderDexView(){
           '</span>' +
         '</div>' +
         rows +
+        hazHtml +
         '<div class="page-note">「？？？」はまだ出会っていないモンスター。カードをタップでくわしく見られるよ。</div>' +
         '<button class="page-turn prev" id="dexPrevBtn" title="前のタイプ">↶</button>' +
         '<button class="page-turn next" id="dexNextBtn" title="次のタイプ">↷</button>' +
@@ -116,7 +137,7 @@ function renderDexView(){
     renderDexView();
   });
 
-  document.querySelectorAll('.dex-node.final[data-key]').forEach(function(el){
+  document.querySelectorAll('.dex-node[data-key]').forEach(function(el){
     el.addEventListener('click', function(){ showDexDetail(el.getAttribute('data-key')); });
   });
 }
@@ -129,6 +150,26 @@ function tierEyebrow(tier){
 
 function showDexDetail(key){
   const slotNum = parseInt(key.replace('slot',''), 10);
+
+  // ハズレ monsters live outside the tree, so handle them separately.
+  const hazIdx = HAZURE_SLOTS.indexOf(slotNum);
+  if (hazIdx >= 0){
+    const hz = COLLECTION[key];
+    openModal(
+      '💀 ハズレモンスター',
+      'No.' + slotNum,
+      'ごみを出しすぎたり、分別をまちがえすぎると生まれてしまう…。このモンスターになると育成はそこで終わってしまうよ。',
+      [
+        { label:'なってしまった回数', value: (hz ? hz.count : 0) + ' 回' },
+        { label:'はじめて出た日', value: hz ? new Date(hz.firstDate).toLocaleDateString('ja-JP') : '-' }
+      ],
+      'bad',
+      hazureArtHTML(hazIdx),
+      [{ text:'とじる', action: closeModal, primary:true }]
+    );
+    return;
+  }
+
   const node = allFinalSlots().filter(function(n){ return n.slot === slotNum; })[0];
   const entry = COLLECTION[key];
   const tier = tierForPath(node.pathIndex);
