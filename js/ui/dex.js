@@ -82,22 +82,18 @@ function renderDexView(){
   '<button class="back-btn" id="dexBackBtn">← もどる</button>' +
   '<div class="dex-book">' +
     '<div class="dex-pages">' +
-      '<div class="page page-left">' +
-        '<div class="dex-total">ずかん '+obtainedCount+' / '+totalSlots+'</div>' +
-        '<div class="page-egg">'+dexThumbHTML(gi, null, null, g.slot)+'</div>' +
-        '<div class="page-type">'+meta.icon+' '+meta.label+'</div>' +
-        '<div class="page-progress">みつけた ： '+groupObtained+' / '+groupTotal+'</div>' +
-        '<div class="page-stats">' +
-          '<div><b>'+raisedCount+'</b>ひき 育てた</div>' +
-          '<div><b>'+formatGrams(LIFETIME.recycle+LIFETIME.paper+LIFETIME.compost)+'</b> 資源に回した</div>' +
+      '<div class="page page-single">' +
+        '<div class="page-topbar">' +
+          '<span class="page-egg">'+dexThumbHTML(gi, null, null, g.slot)+'</span>' +
+          '<span class="page-title-wrap">' +
+            '<b class="page-type">'+meta.icon+' '+meta.label+'</b>' +
+            '<span class="page-progress">みつけた '+groupObtained+' / '+groupTotal+'　（ぜんぶで '+obtainedCount+' / '+totalSlots+'）</span>' +
+          '</span>' +
         '</div>' +
-        '<div class="page-note">「？？？」はまだ<br>出会っていないよ</div>' +
-        '<button class="page-turn prev" id="dexPrevBtn" title="前のページ">↶</button>' +
-      '</div>' +
-      '<div class="page page-right">' +
-        '<div class="page-head">'+meta.icon+' '+meta.label+'</div>' +
         rows +
-        '<button class="page-turn next" id="dexNextBtn" title="次のページ">↷</button>' +
+        '<div class="page-note">「？？？」はまだ出会っていないモンスター。カードをタップでくわしく見られるよ。</div>' +
+        '<button class="page-turn prev" id="dexPrevBtn" title="前のタイプ">↶</button>' +
+        '<button class="page-turn next" id="dexNextBtn" title="次のタイプ">↷</button>' +
       '</div>' +
     '</div>' +
     '<div class="page-num">- '+(gi+1)+' / '+EGG_GROUPS.length+' -</div>' +
