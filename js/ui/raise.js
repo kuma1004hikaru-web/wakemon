@@ -290,7 +290,11 @@ function renderRaiseView(){
   const group = groupByIdx(STATE.groupIdx);
   const stage = stageForDay(STATE.day);
   const svg = monsterSVG(STATE, stage);
-  const sceneSizePx = {0:200, 1:230, 2:260}[stage] || 260;
+  // Size the monster relative to the actual screen so it fills a tall phone
+  // instead of floating small in a big empty scene. Grows with each stage.
+  const stageScale = {0:0.82, 1:0.92, 2:1.0}[stage] || 1.0;
+  const sizeCap = Math.min(window.innerWidth * 0.82, window.innerHeight * 0.42);
+  const sceneSizePx = Math.round(sizeCap * stageScale);
   const lvl = warningLevel(STATE);
   const warnBadge = STATE.isBadLocked ? '😷' : (lvl === 2 ? '⚠️' : (lvl === 1 ? '💡' : ''));
 

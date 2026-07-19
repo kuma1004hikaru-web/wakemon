@@ -111,8 +111,8 @@
   body:not(.raise-fullscreen) .scene-panel{
     height:560px; border-radius:24px; box-shadow:var(--shadow); border:1px solid var(--line); margin-bottom:16px;
   }
-  .scene-sky{ position:absolute; top:0; left:0; right:0; height:58%; background:#ABFFFA; }
-  .scene-ground{ position:absolute; bottom:0; left:0; right:0; height:42%; background:#B5FF71; }
+  .scene-sky{ position:absolute; top:0; left:0; right:0; height:50%; background:#ABFFFA; }
+  .scene-ground{ position:absolute; bottom:0; left:0; right:0; height:50%; background:#B5FF71; }
   .scene-cloud{
     position:absolute; background:#fff; border-radius:999px; z-index:0;
     animation:cloud-drift 20s ease-in-out infinite;
@@ -124,7 +124,7 @@
   .scene-topbar{
     position:relative; z-index:3; flex:0 0 auto;
     display:flex; justify-content:space-between; align-items:flex-start;
-    padding:14px 14px 0;
+    padding:calc(12px + env(safe-area-inset-top)) 14px 0;
   }
   .mini-hud{
     background:rgba(255,255,255,0.7); border-radius:14px; padding:8px 10px;
@@ -165,11 +165,16 @@
   .stat-fill{ height:100%; border-radius:999px; transition:width .4s ease, background .4s ease; }
   .stat-caption{ font-size:9.5px; color:var(--ink-soft); margin-top:4px; }
 
+  /* Anchor the monster low (standing on the grass) instead of floating in
+     the middle, so there's no big empty gap under it — the scene reads as
+     compact top-to-bottom on tall phone screens. */
   .scene-monster-area{
     position:relative; z-index:1; flex:1; min-height:0;
-    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    display:flex; flex-direction:column; align-items:center; justify-content:flex-end;
+    padding-bottom:4px;
   }
   .scene-monster-zone{ position:relative; z-index:1; display:flex; align-items:center; justify-content:center; }
+  .scene-monster-zone{ max-width:86vw; max-height:48vh; }
   .scene-monster-zone svg, .scene-monster-zone .custom-art-wrap{ width:100%; height:100%; display:block; }
   .custom-art-wrap{ position:relative; display:inline-block; }
   .custom-art-wrap img{ display:block; width:100%; height:100%; object-fit:contain; }
@@ -200,7 +205,7 @@
 
   .scene-actions{
     position:relative; z-index:2; flex:0 0 auto; display:flex; gap:16px; justify-content:center;
-    padding:8px 16px 26px;
+    padding:6px 16px calc(16px + env(safe-area-inset-bottom));
   }
   .big-action-btn{
     width:112px; height:112px; border-radius:50%; border:5px solid var(--ink);
