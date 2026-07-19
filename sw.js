@@ -1,4 +1,4 @@
-const CACHE_NAME = 'wakemon-cache-v22';
+const CACHE_NAME = 'wakemon-cache-v23';
 const APP_SHELL = [
   './',
   './index.html',
@@ -25,6 +25,7 @@ const APP_SHELL = [
   './assets/art/slot-18.png',
   './assets/art/slot-20.png',
   './assets/art/slot-21.png',
+  './assets/art/slot-31.png',
   './icons/icon-192.png',
   './icons/icon-512.png',
   './icons/icon-maskable-192.png',
