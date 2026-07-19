@@ -1,11 +1,12 @@
 ﻿/* ============================================================
    SVG monster rendering
    ============================================================ */
+// The numeric slot badge used to be drawn on every monster while artwork
+// was being mapped to the correlation diagram. All art is placed by slot
+// now, so the badge is retired — the dex shows "No.X" as a text label
+// instead. Callers still pass slot numbers; they are simply ignored.
 function slotBadge(number){
-  if (number === null || number === undefined) return '';
-  return '' +
-    '<circle cx="30" cy="32" r="17" fill="#2F6F5E" stroke="#fff" stroke-width="2.5"/>' +
-    '<text x="30" y="37" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="15" font-weight="700" fill="#fff">'+number+'</text>';
+  return '';
 }
 
 function eggSVG(color, number){
@@ -171,7 +172,6 @@ function customArtHTML(slotNumber){
   return '' +
     '<div class="custom-art-wrap">' +
       '<img src="'+src+'" alt="No.'+slotNumber+'"/>' +
-      '<div class="slot-badge-overlay">'+slotNumber+'</div>' +
     '</div>';
 }
 

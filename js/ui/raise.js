@@ -119,6 +119,59 @@ function openStatsDetail(){
   });
 }
 
+/* ============================================================
+   Weekly trash log: bar chart of grams per real calendar day for
+   the last 7 days, with the national-average line for scale.
+   ============================================================ */
+function weekBarColor(v){
+  if (v > HARD_LIMIT_G) return '#E4572E';
+  if (v > SOFT_LIMIT_G) return '#F4B740';
+  return '#3FB05A';
+}
+
+function renderWeeklyChart(){
+  const keys = lastNDateKeys(7);
+  const values = keys.map(function(k){ return DAILY_LOG[k] || 0; });
+  const maxV = values.reduce(function(a,b){ return Math.max(a,b); }, SOFT_LIMIT_G) * 1.15;
+  const avgPct = Math.round((SOFT_LIMIT_G / maxV) * 100);
+
+  let cols = '';
+  keys.forEach(function(k, i){
+    const v = values[i];
+    const hPct = Math.max(v > 0 ? 3 : 0, Math.round((v / maxV) * 100));
+    const parts = k.split('-');
+    const label = parseInt(parts[1], 10) + '/' + parseInt(parts[2], 10);
+    const isToday = i === keys.length - 1;
+    cols += '<div class="week-col'+(isToday ? ' today' : '')+'">' +
+      '<div class="week-val">'+(v > 0 ? formatGrams(v) : '－')+'</div>' +
+      '<div class="week-bar-track"><div class="week-bar" style="height:'+hPct+'%; background:'+weekBarColor(v)+';"></div></div>' +
+      '<div class="week-day">'+(isToday ? 'きょう' : label)+'</div>' +
+    '</div>';
+  });
+
+  return '' +
+    '<div class="week-chart">' +
+      '<div class="week-avg-line" style="bottom:'+avgPct+'%;"><span>全国平均 '+formatGrams(SOFT_LIMIT_G)+'</span></div>' +
+      cols +
+    '</div>' +
+    '<div class="stat-caption">'+AVG_SOURCE_LABEL+'</div>';
+}
+
+function openWeeklyLog(){
+  document.getElementById('feedModalRoot').innerHTML =
+    '<div class="feed-modal-overlay" id="weeklyLogOverlay">' +
+      '<div class="feed-modal-card" style="border-radius:24px; max-width:400px; margin:auto;">' +
+        '<div class="feed-modal-header"><b>📊 1しゅうかんのごみきろく</b><button class="feed-modal-close" id="weeklyLogClose">✕</button></div>' +
+        renderWeeklyChart() +
+        '<div class="week-note">えさにしたごみの量を、日にちごとにきろくしているよ。全国平均より下をめざそう！</div>' +
+      '</div>' +
+    '</div>';
+  document.getElementById('weeklyLogClose').addEventListener('click', closeFeedModal);
+  document.getElementById('weeklyLogOverlay').addEventListener('click', function(e){
+    if (e.target.id === 'weeklyLogOverlay') closeFeedModal();
+  });
+}
+
 function renderGraph(){
   const values = WASTE_CATEGORIES.map(function(c){ return STATE.cycleBreakdown[c.id] || 0; });
   const max = Math.max(50, values.reduce(function(a,b){ return Math.max(a,b); }, 0));
@@ -321,6 +374,7 @@ function renderRaiseView(){
     '<div class="scene-actions">' +
       '<button class="big-action-btn" id="feedBigBtn"><span class="baticon">🍱</span>えさ<br>あげる</button>' +
       '<button class="big-action-btn" id="dexBigBtn"><span class="baticon">📖</span>ずかん</button>' +
+      '<button class="big-action-btn" id="logBigBtn"><span class="baticon">📊</span>きろく</button>' +
     '</div>' +
   '</div>';
 
@@ -331,6 +385,7 @@ function renderRaiseView(){
 function attachRaiseHandlers(){
   document.getElementById('feedBigBtn').addEventListener('click', openFeedModal);
   document.getElementById('dexBigBtn').addEventListener('click', function(){ setTab('dex'); });
+  document.getElementById('logBigBtn').addEventListener('click', openWeeklyLog);
   document.getElementById('miniHud').addEventListener('click', openStatsDetail);
   document.getElementById('sceneSettingsBtn').addEventListener('click', resetAll);
 }

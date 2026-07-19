@@ -17,6 +17,7 @@ async function onSortAnswer(itemId, categoryId){
   const wasBad = STATE.isBadLocked;
   const correct = applySortedFeed(STATE, item, categoryId);
   LIFETIME[item.categoryId] = (LIFETIME[item.categoryId] || 0) + item.grams;
+  recordDailyTrash(item.grams);
 
   // back to the pick screen with fresh choices + feedback banner
   FEED_SELECTED = null;
@@ -193,6 +194,7 @@ async function performReset(){
   STATE = freshState(null);
   LIFETIME = emptyBreakdown();
   COLLECTION = {};
+  DAILY_LOG = {};
   BAD_ALERT_SHOWN = false;
   await saveGameData({ state: STATE, lifetime: LIFETIME });
   await saveCollection(COLLECTION);
@@ -284,6 +286,7 @@ async function init(){
     LIFETIME = emptyBreakdown();
   }
   COLLECTION = savedCollection || {};
+  DAILY_LOG = loadDailyLog();
   BAD_ALERT_SHOWN = STATE.isBadLocked; // don't re-trigger alert on reload
 
   if (!saved){

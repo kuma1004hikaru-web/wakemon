@@ -4,6 +4,7 @@
    ============================================================ */
 const GAME_KEY = 'wakemon-game-data';
 const COLLECTION_KEY = 'wakemon-collection';
+const DAILY_KEY = 'wakemon-daily-log';
 
 function loadGameData(){
   try{
@@ -35,9 +36,27 @@ function saveCollection(col){
     console.warn('save failed', e);
   }
 }
+// Real-calendar log of grams fed per day: { 'YYYY-MM-DD': grams }.
+// Backs the weekly bar chart.
+function loadDailyLog(){
+  try{
+    const raw = localStorage.getItem(DAILY_KEY);
+    return raw ? JSON.parse(raw) : {};
+  }catch(e){
+    return {};
+  }
+}
+function saveDailyLog(log){
+  try{
+    localStorage.setItem(DAILY_KEY, JSON.stringify(log));
+  }catch(e){
+    console.warn('save failed', e);
+  }
+}
 function deleteAllSaves(){
   try{ localStorage.removeItem(GAME_KEY); }catch(e){}
   try{ localStorage.removeItem(COLLECTION_KEY); }catch(e){}
+  try{ localStorage.removeItem(DAILY_KEY); }catch(e){}
 }
 
 // Debounced save for rapid taps (feeding): collapses many quick saves

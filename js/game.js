@@ -150,8 +150,40 @@ function formatGrams(g){
 let STATE = null;         // current cycle state
 let LIFETIME = null;      // lifetime waste totals
 let COLLECTION = {};      // dex entries
+let DAILY_LOG = {};       // grams fed per real calendar day (weekly chart)
 let ACTIVE_TAB = 'raise';
 let TOAST_TIMER = null;
 let BAD_ALERT_SHOWN = false;
 
 function collectionKey(speciesId, form){ return speciesId + '_' + form; }
+
+/* ============================================================
+   Daily trash log (real calendar days, for the weekly chart)
+   ============================================================ */
+function dateKeyOf(d){
+  const m = String(d.getMonth() + 1);
+  const day = String(d.getDate());
+  return d.getFullYear() + '-' + (m.length < 2 ? '0' + m : m) + '-' + (day.length < 2 ? '0' + day : day);
+}
+
+// The last n calendar days as keys, oldest first, ending today.
+function lastNDateKeys(n){
+  const keys = [];
+  const now = new Date();
+  for (let i = n - 1; i >= 0; i--){
+    const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i);
+    keys.push(dateKeyOf(d));
+  }
+  return keys;
+}
+
+function recordDailyTrash(grams){
+  const key = dateKeyOf(new Date());
+  DAILY_LOG[key] = (DAILY_LOG[key] || 0) + grams;
+  // keep the log from growing forever — 30 days is plenty for the chart
+  const keys = Object.keys(DAILY_LOG).sort();
+  while (keys.length > 30){
+    delete DAILY_LOG[keys.shift()];
+  }
+  saveDailyLog(DAILY_LOG);
+}
