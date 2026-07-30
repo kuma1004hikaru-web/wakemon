@@ -54,6 +54,7 @@ const CUSTOM_ART = {
   20: 'assets/art/slot-20.png',
   21: 'assets/art/slot-21.png',
   31: 'assets/art/slot-31.png',
+  32: 'assets/art/slot-32.png',
 };
 
 const EGG_GROUPS = [
