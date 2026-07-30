@@ -167,7 +167,9 @@ async function finishCycle(){
 function setTab(tab){
   ACTIVE_TAB = tab;
   document.getElementById('raiseView').style.display = tab === 'raise' ? 'block' : 'none';
-  document.getElementById('dexView').style.display = tab === 'dex' ? 'block' : 'none';
+  // flex (not block) so the dex book can stretch to the full screen height —
+  // an inline "block" here would override the stylesheet's flex layout.
+  document.getElementById('dexView').style.display = tab === 'dex' ? 'flex' : 'none';
   document.body.classList.toggle('raise-fullscreen', tab === 'raise');
   document.body.classList.toggle('dex-fullscreen', tab === 'dex');
   if (tab === 'dex') renderDexView();
