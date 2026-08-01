@@ -688,14 +688,24 @@
      page, and the thumbnail is capped by viewport height so three rows plus
      the ハズレ card still fit one screen. */
   .dex-node{
+    position:relative;
     background:#FBFCF8; border:2px solid var(--line); border-radius:12px;
     padding:4px 3px; text-align:center; min-width:0;
+  }
+  /* the diagram number, kept small and quiet — the name is the identity now */
+  .node-no{
+    position:absolute; top:2px; left:4px;
+    font-family:'JetBrains Mono',monospace; font-size:8px; font-weight:700;
+    color:var(--ink-soft); opacity:0.55; line-height:1;
   }
   .dex-node.mid{ flex:0 0 30%; }
   .dex-node .thumb{ width:min(100%, 9vh); aspect-ratio:1; margin:0 auto; display:flex; align-items:center; justify-content:center; }
   .dex-node .thumb img, .dex-node .thumb svg{ width:100%; height:100%; object-fit:contain; display:block; }
-  .dex-node b{ display:block; font-family:'JetBrains Mono',monospace; font-size:10px; margin-top:2px; }
-  .dex-node .sub{ font-size:8.5px; color:var(--ink-soft); margin-top:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .dex-node b{
+    display:block; font-family:'Zen Maru Gothic',sans-serif; font-weight:700;
+    font-size:9.5px; line-height:1.25; margin-top:3px; word-break:break-all;
+  }
+  .dex-node .sub{ font-size:8px; color:var(--ink-soft); margin-top:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .dex-node.final{ cursor:pointer; transition:transform .12s ease; }
   .dex-node.final:active{ transform:scale(0.95); }
   .dex-node.locked{ cursor:default; }

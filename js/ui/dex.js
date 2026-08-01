@@ -64,9 +64,10 @@ function renderDexView(){
       groupTotal++;
       if (entry) groupObtained++;
       finals += '<div class="dex-node final '+(entry ? tier : 'locked')+'"'+(entry ? ' data-key="'+key+'"' : '')+'>' +
+        '<span class="node-no">'+slotNum+'</span>' +
         '<div class="thumb">'+dexThumbHTML(gi, pi, fi, slotNum)+'</div>' +
-        '<b>No.'+slotNum+'</b>' +
-        '<div class="sub">'+(entry ? tierIcon(tier)+' '+entry.count+'回' : '？？？')+'</div>' +
+        '<b>'+(entry ? monsterName(slotNum) : '？？？')+'</b>' +
+        '<div class="sub">'+(entry ? tierIcon(tier)+' '+entry.count+'回' : 'みつけていない')+'</div>' +
       '</div>';
     });
     // Mid-tier (2〜3日目) forms stay silhouettes until raised at least once.
@@ -74,9 +75,10 @@ function renderDexView(){
     const midSeen = !!COLLECTION[midKey];
     rows += '<div class="dex-row">' +
       '<div class="dex-node mid '+(midSeen ? '' : 'locked')+'">' +
+        '<span class="node-no">'+path.slot+'</span>' +
         '<div class="thumb">'+dexThumbHTML(gi, pi, null, path.slot)+'</div>' +
-        '<b>No.'+path.slot+'</b>' +
-        '<div class="sub">'+(midSeen ? '2〜3日目' : '？？？')+'</div>' +
+        '<b>'+(midSeen ? monsterName(path.slot) : '？？？')+'</b>' +
+        '<div class="sub">'+(midSeen ? '2〜3日目' : 'みつけていない')+'</div>' +
       '</div>' +
       '<div class="dex-arrow">➜</div>' +
       '<div class="dex-finals">'+finals+'</div>' +
@@ -94,9 +96,10 @@ function renderDexView(){
       '<div class="dex-hazure-label">💀 そだてに<br>しっぱいすると…</div>' +
       '<div class="dex-arrow">➜</div>' +
       '<div class="dex-node hazure '+(hazEntry ? 'bad' : 'locked')+'"'+(hazEntry ? ' data-key="'+hazKey+'"' : '')+'>' +
+        '<span class="node-no">'+hazSlot+'</span>' +
         '<div class="thumb">'+hazureArtHTML(gi)+'</div>' +
-        '<b>No.'+hazSlot+'</b>' +
-        '<div class="sub">'+(hazEntry ? '💀 '+hazEntry.count+'回' : '？？？')+'</div>' +
+        '<b>'+(hazEntry ? monsterName(hazSlot) : '？？？')+'</b>' +
+        '<div class="sub">'+(hazEntry ? '💀 '+hazEntry.count+'回' : 'みつけていない')+'</div>' +
       '</div>' +
     '</div>';
 
@@ -153,9 +156,10 @@ function showDexDetail(key){
     const hz = COLLECTION[key];
     openModal(
       '💀 ハズレモンスター',
-      'No.' + slotNum,
-      'ごみを出しすぎたり、分別をまちがえすぎると生まれてしまう…。このモンスターになると育成はそこで終わってしまうよ。',
+      monsterName(slotNum),
+      monsterDesc(slotNum),
       [
+        { label:'ずかん番号', value: 'No.' + slotNum },
         { label:'なってしまった回数', value: (hz ? hz.count : 0) + ' 回' },
         { label:'はじめて出た日', value: hz ? new Date(hz.firstDate).toLocaleDateString('ja-JP') : '-' }
       ],
@@ -172,9 +176,10 @@ function showDexDetail(key){
   const fakeState = { groupIdx: node.groupIdx, pathIndex: node.pathIndex, finalIndex: node.finalIndex };
   openModal(
     tierEyebrow(tier),
-    'No.' + slotNum,
-    '相関図の'+slotNum+'番のモンスター（画像はこれから当てはめ予定）',
+    monsterName(slotNum),
+    monsterDesc(slotNum),
     [
+      { label:'ずかん番号', value: 'No.' + slotNum },
       { label:'育成回数', value: entry.count + ' 回' },
       { label:'はじめて出会った日', value: new Date(entry.firstDate).toLocaleDateString('ja-JP') }
     ],

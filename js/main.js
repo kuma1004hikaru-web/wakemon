@@ -69,8 +69,8 @@ async function failCycle(){
   playEvolveEffect(function(){
     openModal(
       '…そだて しっぱい',
-      'No.' + hazSlot,
-      'ごみを出しすぎたり、分別をまちがえすぎて、モンスターが「ハズレ」に変わってしまった…。育成はここで終わり。次はごみを減らして、正しく分別してみよう！',
+      monsterName(hazSlot),
+      monsterDesc(hazSlot) + ' 育成はここで終わり。次はごみを減らして、正しく分別してみよう！',
       [
         { label:'このサイクルのごみ合計', value: formatGrams(total) }
       ],
@@ -126,8 +126,8 @@ async function finishCycle(){
   const finalSlot = currentSlot(STATE);
   const tier = tierForPath(STATE.pathIndex);
   const key = 'slot' + finalSlot;
-  const placeholderName = 'No.' + finalSlot;
-  const placeholderDesc = '相関図の'+finalSlot+'番のモンスター（画像はこれから当てはめ予定）';
+  const finalName = monsterName(finalSlot);
+  const finalDesc = monsterDesc(finalSlot);
 
   if (!COLLECTION[key]){
     COLLECTION[key] = { count: 0, firstDate: new Date().toISOString() };
@@ -152,8 +152,8 @@ async function finishCycle(){
   playEvolveEffect(function(){
     openModal(
       eyebrow,
-      placeholderName,
-      placeholderDesc,
+      finalName,
+      finalDesc,
       [
         { label:'このサイクルのごみ合計', value: formatGrams(total) },
         { label:'リサイクル度', value: Math.round(STATE.eco) + ' pt' }

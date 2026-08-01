@@ -404,7 +404,7 @@ function renderRaiseView(){
     '<div class="scene-monster-area">' +
       '<div class="scene-monster-zone" id="sceneMonsterZone" style="width:'+sceneSizePx+'px; height:'+sceneSizePx+'px;">' + svg + '</div>' +
       '<div class="scene-caption">' +
-        '<span class="scene-species">'+group.baby+'（'+STATE.day+'日目/'+CYCLE_DAYS+'日）</span>' +
+        '<span class="scene-species">'+monsterName(currentSlot(STATE))+'（'+STATE.day+'日目/'+CYCLE_DAYS+'日）</span>' +
         '<span class="scene-pips">'+renderDayPips()+'</span>' +
       '</div>' +
     '</div>' +
