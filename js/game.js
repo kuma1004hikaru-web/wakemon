@@ -61,24 +61,36 @@ function weightedPick(weights){
   return weights.length - 1;
 }
 
+// How rare a whole path feels: the mean of its two finals' pick weights.
+// Used so a path leading to two でんせつ monsters is itself less likely.
+function pathRarityWeight(groupIdx, pathIndex, r){
+  const finals = PATH_LAYOUT[groupIdx][pathIndex].finals;
+  return (rarityWeight(finals[0], r) + rarityWeight(finals[1], r)) / 2;
+}
+
 // Called exactly at the day1->day2 transition (cycleBreakdown at this
-// moment reflects day1 only). Mostly behavior-driven, with some randomness.
+// moment reflects day1 only). Behaviour picks the side of the tree,
+// rarity rescales how often each side actually comes up.
 function resolvePathBranch(state){
   if (state.isBadLocked){ state.pathIndex = 2; return; }
   const r = goodRatio(state.cycleBreakdown);
-  const w0 = 15 + 70*r;        // favored by good day-1 sorting
-  const w2 = 15 + 70*(1-r);    // favored by messy day-1 sorting
-  const w1 = 35;               // steady middle option
+  const gi = state.groupIdx;
+  const w0 = (15 + 70*r)     * pathRarityWeight(gi, 0, r);  // favored by good day-1 sorting
+  const w1 = 35              * pathRarityWeight(gi, 1, r);  // steady middle option
+  const w2 = (15 + 70*(1-r)) * pathRarityWeight(gi, 2, r);  // favored by messy day-1 sorting
   state.pathIndex = weightedPick([w0, w1, w2]);
 }
 
 // Called at cycle completion. Uses the whole cycle's ratio to weight
-// between the 2 finals under whichever path was chosen at day 2.
+// between the 2 finals under whichever path was chosen at day 2, then
+// scales each by its rarity.
 function resolveFinalBranch(state){
   if (state.isBadLocked){ state.finalIndex = 1; return; }
   const r = goodRatio(state.cycleBreakdown);
-  const w0 = 20 + 60*r;
-  const w1 = 100 - w0;
+  const finals = PATH_LAYOUT[state.groupIdx][state.pathIndex].finals;
+  const base0 = 20 + 60*r;
+  const w0 = base0         * rarityWeight(finals[0], r);
+  const w1 = (100 - base0) * rarityWeight(finals[1], r);
   state.finalIndex = weightedPick([w0, w1]);
 }
 

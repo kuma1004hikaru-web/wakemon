@@ -69,37 +69,34 @@ const MONSTER_INFO = {
   2:  { name:'モリスラ',       desc:'落ち葉や紙をたべて育つ、森のスライム。まだどんな姿になるかわからない。' },
   3:  { name:'ホシノメ',       desc:'生ごみからめばえた小さな芽。あたまの星が げんきのしるし。' },
   4:  { name:'ハッパネコ',     desc:'葉っぱのしっぽをもつ森のネコ。ごみが多いと ごきげんななめ。' },
-  5:  { name:'キノコノコ',     desc:'生ごみを土にかえしてくれる、赤いかさのキノコ。分別がうまくいくと元気に育つ。' },
-  6:  { name:'モリノヌシ',     desc:'木の角と葉のたてがみをもつ、森のぬし。きれいに分別された資源だけで育つ。' },
-  7:  { name:'ホシガメ',       desc:'こうらに星がうかぶ、のんびりやのカメ。ゆっくり ちゃんと分別する子のところに来る。' },
-  8:  { name:'モリノチョウロウ', desc:'長い年月をかけて育った森の長老。つえをついて、ごみの分け方を教えてくれる。' },
-  9:  { name:'ミツガシラオウ', desc:'三つの顔をもつ森のネコの王さま。王冠は 資源を大切にしたしるし。' },
-  10: { name:'シゴトネコ',     desc:'スーツを着こなす まじめなネコ。きちんとしているけれど、ちょっと つかれぎみ。' },
-
+  5:  { name:'キノコノコ',     desc:'生ごみを土にかえしてくれる、赤いかさのキノコ。分別がうまくいくと元気に育つ。', rarity:2 },
+  6:  { name:'モリノヌシ',     desc:'木の角と葉のたてがみをもつ、森のぬし。きれいに分別された資源だけで育つ。', rarity:4 },
+  7:  { name:'ホシガメ',       desc:'こうらに星がうかぶ、のんびりやのカメ。ゆっくり ちゃんと分別する子のところに来る。', rarity:2 },
+  8:  { name:'モリノチョウロウ', desc:'長い年月をかけて育った森の長老。つえをついて、ごみの分け方を教えてくれる。', rarity:3 },
+  9:  { name:'ミツガシラオウ', desc:'三つの顔をもつ森のネコの王さま。王冠は 資源を大切にしたしるし。', rarity:4 },
+  10: { name:'シゴトネコ',     desc:'スーツを着こなす まじめなネコ。きちんとしているけれど、ちょっと つかれぎみ。', rarity:1 },
   // ---- みずタイプ ----
   11: { name:'みずのたまご',   desc:'しずくもようの青いたまご。びんや かんが とくいなモンスターが生まれる。' },
   12: { name:'ボトルン',       desc:'水がはいったペットボトルのすがた。ちゃんと分別されると 資源に生まれかわる。' },
   13: { name:'ウキワアザラシ', desc:'うきわをかぶった あそびずきのアザラシ。海がきれいだと よろこぶ。' },
   14: { name:'カサクラゲ',     desc:'こわれたかさが 海にながれてクラゲになった。かさは 燃えないごみへ。' },
-  15: { name:'ホシボトル',     desc:'ボトルの中で星が育っている、ふしぎなすがた。きれいな水の しるし。' },
-  16: { name:'ヤドカリン',     desc:'すてられたボトルを やどにしたヤドカリ。本当は 貝がらの家がいいらしい。' },
-  17: { name:'バケツアザラシ', desc:'赤いバケツがトレードマークのアザラシ。バケツは大事にながく使おう。' },
-  18: { name:'アザラシキング', desc:'マントと王冠を身につけた海の王さま。きれいな海を おさめている。' },
-  19: { name:'ミズキリン',     desc:'水色のもようをもつ 首の長いキリン。高いところから 海を見わたす。' },
-  20: { name:'ホシトナカイ',   desc:'体に星がかがやくトナカイ。資源をたくさん集めた子のところにあらわれる。' },
-
+  15: { name:'ホシボトル',     desc:'ボトルの中で星が育っている、ふしぎなすがた。きれいな水の しるし。', rarity:2 },
+  16: { name:'ヤドカリン',     desc:'すてられたボトルを やどにしたヤドカリ。本当は 貝がらの家がいいらしい。', rarity:1 },
+  17: { name:'バケツアザラシ', desc:'赤いバケツがトレードマークのアザラシ。バケツは大事にながく使おう。', rarity:1 },
+  18: { name:'アザラシキング', desc:'マントと王冠を身につけた海の王さま。きれいな海を おさめている。', rarity:4 },
+  19: { name:'ミズキリン',     desc:'水色のもようをもつ 首の長いキリン。高いところから 海を見わたす。', rarity:3 },
+  20: { name:'ホシトナカイ',   desc:'体に星がかがやくトナカイ。資源をたくさん集めた子のところにあらわれる。', rarity:3 },
   // ---- ほのおタイプ ----
   21: { name:'ほのおのたまご', desc:'炎につつまれた赤いたまご。もえるごみが とくいなモンスターが生まれる。' },
   22: { name:'ヒノコ',         desc:'小さな火をともす ほのおの子。まだ どんな姿になるかわからない。' },
   23: { name:'スミコロ',       desc:'もえたあとの炭から生まれた。まだ ほんのり あたたかい。' },
   24: { name:'ケムリノコ',     desc:'もやしたごみのけむりから生まれた。ごみを減らすと きえていく。' },
-  25: { name:'フェニックス',   desc:'熱をエネルギーにかえて 生まれかわる鳥。ごみを資源にする力をもつ。' },
-  26: { name:'マグマゴーレム', desc:'灰がかたまってできた 岩の体をもつモンスター。力もちで たよりになる。' },
-  27: { name:'タイマツネコ',   desc:'しっぽの火で みんなをてらすネコ。火のあつかいは じょうず。' },
-  28: { name:'ストーブベア',   desc:'おなかがストーブになっているクマ。ふゆは みんなが集まってくる。' },
-  29: { name:'ハイフキドリ',   desc:'灰をまきちらしながら飛ぶ鳥。もやすごみが多いと あらわれる。' },
-  30: { name:'スモッグドラゴン', desc:'けむりで空をよごしてしまうドラゴン。ごみを減らすと おとなしくなる。' },
-
+  25: { name:'フェニックス',   desc:'熱をエネルギーにかえて 生まれかわる鳥。ごみを資源にする力をもつ。', rarity:4 },
+  26: { name:'マグマゴーレム', desc:'灰がかたまってできた 岩の体をもつモンスター。力もちで たよりになる。', rarity:3 },
+  27: { name:'タイマツネコ',   desc:'しっぽの火で みんなをてらすネコ。火のあつかいは じょうず。', rarity:2 },
+  28: { name:'ストーブベア',   desc:'おなかがストーブになっているクマ。ふゆは みんなが集まってくる。', rarity:2 },
+  29: { name:'ハイフキドリ',   desc:'灰をまきちらしながら飛ぶ鳥。もやすごみが多いと あらわれる。', rarity:1 },
+  30: { name:'スモッグドラゴン', desc:'けむりで空をよごしてしまうドラゴン。ごみを減らすと おとなしくなる。', rarity:3 },
   // ---- ハズレ ----
   31: { name:'カレボック',     desc:'ごみだらけの森で育ってしまい、かれてしまった木。次は ごみを減らしてみよう。' },
   32: { name:'ヘドロン',       desc:'よごれた水にしずんで どろどろになってしまった。正しく分別すれば 出会わずにすむ。' },
@@ -113,6 +110,42 @@ function monsterName(slot){
 function monsterDesc(slot){
   const info = MONSTER_INFO[slot];
   return info ? info.desc : '';
+}
+
+/* ============================================================
+   レア度 (rarity)
+   ============================================================
+   Only the 18 collectible finals carry a rarity. RARITY_PICK_WEIGHT
+   scales how often each one is picked at cycle completion: a でんせつ
+   monster is drawn far less often than a ふつう one even when the
+   player sorts perfectly. Sorting behaviour still decides *which side*
+   of the tree you land on — rarity only rescales within that. */
+const RARITY_LABEL = { 1:'ふつう', 2:'めずらしい', 3:'レア', 4:'でんせつ' };
+const RARITY_PICK_WEIGHT = { 1:1.0, 2:0.6, 3:0.3, 4:0.12 };
+
+function rarityOf(slot){
+  const info = MONSTER_INFO[slot];
+  return (info && info.rarity) || 0;   // 0 = not a collectible final
+}
+function rarityLabel(slot){ return RARITY_LABEL[rarityOf(slot)] || ''; }
+
+// Pick weight for a final, given how well this cycle was sorted
+// (goodRatio 0..1). The rarer the monster, the more sorting skill moves
+// the odds: at ratio 0.5 every monster sits on its base weight, good
+// sorting multiplies でんせつ odds several times over, sloppy sorting
+// nearly removes them. ふつう monsters are unaffected by skill.
+function rarityWeight(slot, goodRatioValue){
+  const rar = rarityOf(slot);
+  if (!rar) return 1;
+  const base = RARITY_PICK_WEIGHT[rar] || 1;
+  const r = (typeof goodRatioValue === 'number') ? goodRatioValue : 0.5;
+  const skill = Math.pow(0.4 + 1.2 * r, rar - 1);
+  return base * skill;
+}
+function rarityStars(slot){
+  const r = rarityOf(slot);
+  if (!r) return '';
+  return '★'.repeat(r) + '☆'.repeat(4 - r);
 }
 
 // Friendly type names per egg-group shape. Used by the dex chapters and the

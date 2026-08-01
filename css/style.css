@@ -710,6 +710,19 @@
   .dex-node.final:active{ transform:scale(0.95); }
   .dex-node.locked{ cursor:default; }
   .dex-node.locked .thumb img, .dex-node.locked .thumb svg{ filter:brightness(0); opacity:0.32; }
+  /* card colour follows レア度 (rarity), not the internal tier */
+  .dex-node.r1{ border-color:#CFD6C6; }
+  .dex-node.r2{ border-color:#8FC7E8; background:#F4FAFE; }
+  .dex-node.r3{ border-color:#C79BE0; background:#FAF4FE; }
+  .dex-node.r4{ border-color:#F4B740; background:#FFFBEF; }
+  .dex-node .rarity{
+    font-size:8.5px; letter-spacing:-0.5px; line-height:1.2; margin-top:1px;
+    color:#C9A227;
+  }
+  .dex-node.r1 .rarity{ color:#9AA38F; }
+  .dex-node.r2 .rarity{ color:#3E92C8; }
+  .dex-node.r3 .rarity{ color:#8E52BE; }
+  .dex-node.locked .rarity{ opacity:0.5; }
   .dex-node.great{ border-color:#F4B740; background:#FFFBEF; }
   .dex-node.normal{ border-color:#BCD9CE; }
   .dex-node.bad{ border-color:#C9CBBE; background:#F4F4EF; }

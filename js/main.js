@@ -146,7 +146,7 @@ async function finishCycle(){
 
   const total = cycleTotal(STATE);
   const finishedGroupIdx = STATE.groupIdx;
-  const eyebrow = tier === 'great' ? '🌟 かんぺき！' : (tier === 'normal' ? '🎉 完成！' : '…完成');
+  const eyebrow = rarityStars(finalSlot) + ' ' + rarityLabel(finalSlot);
 
   // evolution flourish over the scene, then the reveal modal
   playEvolveEffect(function(){
@@ -155,6 +155,7 @@ async function finishCycle(){
       finalName,
       finalDesc,
       [
+        { label:'レア度', value: rarityLabel(finalSlot) },
         { label:'このサイクルのごみ合計', value: formatGrams(total) },
         { label:'リサイクル度', value: Math.round(STATE.eco) + ' pt' }
       ],

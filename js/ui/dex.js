@@ -63,11 +63,13 @@ function renderDexView(){
       const entry = COLLECTION[key];
       groupTotal++;
       if (entry) groupObtained++;
-      finals += '<div class="dex-node final '+(entry ? tier : 'locked')+'"'+(entry ? ' data-key="'+key+'"' : '')+'>' +
+      // rarity is shown even while undiscovered, so it reads as a target
+      finals += '<div class="dex-node final r'+rarityOf(slotNum)+' '+(entry ? '' : 'locked')+'"'+(entry ? ' data-key="'+key+'"' : '')+'>' +
         '<span class="node-no">'+slotNum+'</span>' +
         '<div class="thumb">'+dexThumbHTML(gi, pi, fi, slotNum)+'</div>' +
         '<b>'+(entry ? monsterName(slotNum) : '？？？')+'</b>' +
-        '<div class="sub">'+(entry ? tierIcon(tier)+' '+entry.count+'回' : 'みつけていない')+'</div>' +
+        '<div class="rarity">'+rarityStars(slotNum)+'</div>' +
+        '<div class="sub">'+(entry ? entry.count+'回そだてた' : 'みつけていない')+'</div>' +
       '</div>';
     });
     // Mid-tier (2〜3日目) forms stay silhouettes until raised at least once.
@@ -175,7 +177,7 @@ function showDexDetail(key){
   const tier = tierForPath(node.pathIndex);
   const fakeState = { groupIdx: node.groupIdx, pathIndex: node.pathIndex, finalIndex: node.finalIndex };
   openModal(
-    tierEyebrow(tier),
+    rarityStars(slotNum) + ' ' + rarityLabel(slotNum),
     monsterName(slotNum),
     monsterDesc(slotNum),
     [
