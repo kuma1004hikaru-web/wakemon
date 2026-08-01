@@ -222,6 +222,53 @@
   .big-action-btn:active{ transform:scale(0.94); background:rgba(255,255,255,0.4); }
   .big-action-btn .baticon{ display:block; font-size:18px; margin-bottom:2px; }
 
+  /* ---- egg picker (before a new monster starts) ---- */
+  .egg-pick-overlay{
+    position:fixed; inset:0; z-index:80;
+    background:
+      radial-gradient(circle at 20% 0%, #E7F3E9 0%, transparent 50%),
+      radial-gradient(circle at 100% 10%, #E4F1F3 0%, transparent 45%),
+      var(--paper);
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    padding:calc(20px + env(safe-area-inset-top)) 14px calc(20px + env(safe-area-inset-bottom));
+    animation:egg-pick-in .3s ease;
+  }
+  @keyframes egg-pick-in{ from{ opacity:0; } to{ opacity:1; } }
+  .egg-pick-title{
+    font-family:'Zen Maru Gothic',sans-serif; font-weight:900;
+    font-size:clamp(19px, 5.6vw, 24px); color:var(--pine-dark); text-align:center;
+  }
+  .egg-pick-sub{
+    font-size:11.5px; color:var(--ink-soft); margin-top:6px; margin-bottom:20px; text-align:center;
+  }
+  .egg-grid{
+    display:flex; gap:10px; width:100%; max-width:440px; justify-content:center;
+  }
+  .egg-card{
+    flex:1 1 0; min-width:0;
+    background:var(--card); border:2.5px solid var(--line); border-radius:20px;
+    padding:12px 6px 10px; cursor:pointer; text-align:center;
+    display:flex; flex-direction:column; align-items:center; gap:4px;
+    box-shadow:var(--shadow);
+    transition:transform .12s ease, border-color .12s ease;
+  }
+  .egg-card:active{ transform:scale(0.95); }
+  .egg-card:hover{ border-color:var(--teal); }
+  .egg-card-art{
+    width:100%; aspect-ratio:1; display:flex; align-items:center; justify-content:center;
+    max-height:24vh;
+  }
+  .egg-card-art svg, .egg-card-art img, .egg-card-art .custom-art-wrap{
+    width:100%; height:100%; object-fit:contain; display:block;
+  }
+  /* nowrap + width-relative size so "はっぱタイプ" never breaks mid-word */
+  .egg-card b{
+    font-family:'Zen Maru Gothic',sans-serif; font-weight:700;
+    font-size:clamp(9.5px, 3vw, 12.5px); color:var(--ink); line-height:1.3;
+    white-space:nowrap;
+  }
+  .egg-card span{ font-size:clamp(8px, 2.4vw, 9.5px); color:var(--ink-soft); line-height:1.4; white-space:nowrap; }
+
   /* ---- weekly trash chart ---- */
   .week-chart{
     position:relative; display:flex; align-items:flex-end; gap:6px;

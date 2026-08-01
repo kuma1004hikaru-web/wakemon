@@ -32,7 +32,11 @@ function freshState(prevGroupIdx){
     sortPollution: 0,
     eco: 0,
     isBadLocked: false,
+    // groupIdx starts on a random type so every render has something valid to
+    // draw, but the player picks the real one in the egg picker before
+    // feeding starts (eggChosen flips to true once they do).
     groupIdx: randomGroupIdx(prevGroupIdx),
+    eggChosen: false,
     pathIndex: null,
     finalIndex: null,
   };

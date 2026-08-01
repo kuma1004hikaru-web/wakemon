@@ -120,6 +120,43 @@ function openStatsDetail(){
 }
 
 /* ============================================================
+   Egg picker: shown before a new monster starts so the player
+   chooses which type to raise instead of getting a random one.
+   ============================================================ */
+function renderEggPicker(){
+  let cards = '';
+  EGG_GROUPS.forEach(function(g, gi){
+    const meta = GROUP_META[g.shape] || { icon:'❔', label:g.baby, blurb:'' };
+    const art = customArtHTML(g.slot) || eggSVG(g.color, null);
+    cards += '<button class="egg-card" data-egg="'+gi+'">' +
+      '<div class="egg-card-art">'+art+'</div>' +
+      '<b>'+meta.icon+' '+meta.label+'</b>' +
+      '<span>'+meta.blurb+'</span>' +
+    '</button>';
+  });
+  return '' +
+    '<div class="egg-pick-overlay" id="eggPickOverlay">' +
+      '<div class="egg-pick-title">どのたまごを そだてる？</div>' +
+      '<div class="egg-pick-sub">えらんだたまごから モンスターが生まれるよ</div>' +
+      '<div class="egg-grid">'+cards+'</div>' +
+    '</div>';
+}
+
+function openEggPicker(){
+  document.getElementById('modalRoot').innerHTML = renderEggPicker();
+  document.querySelectorAll('.egg-card').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      chooseEgg(parseInt(btn.getAttribute('data-egg'), 10));
+    });
+  });
+}
+
+// Only interrupt when a fresh monster is still waiting on a choice.
+function maybeShowEggPicker(){
+  if (STATE && !STATE.eggChosen) openEggPicker();
+}
+
+/* ============================================================
    Weekly trash log: bar chart of grams per real calendar day for
    the last 7 days, with the national-average line for scale.
    ============================================================ */

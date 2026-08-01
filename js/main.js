@@ -10,6 +10,17 @@ function showToast(text){
   TOAST_TIMER = setTimeout(function(){ toast.classList.remove('show'); }, 2600);
 }
 
+function chooseEgg(groupIdx){
+  if (!EGG_GROUPS[groupIdx]) return;
+  STATE.groupIdx = groupIdx;
+  STATE.eggChosen = true;
+  closeModal();
+  flushPendingSave();
+  saveGameData({ state: STATE, lifetime: LIFETIME });
+  renderRaiseView();
+  renderTitleMonster();
+}
+
 async function onSortAnswer(itemId, categoryId){
   if (STATE.day > CYCLE_DAYS) return;
   const item = trashById(itemId);
@@ -73,6 +84,7 @@ async function failCycle(){
           saveGameData({ state: STATE, lifetime: LIFETIME });
           renderRaiseView();
           renderDexView();
+          setTimeout(maybeShowEggPicker, 250); // pick the next egg
         }, primary:true }]
     );
   });
@@ -156,6 +168,7 @@ async function finishCycle(){
           saveGameData({ state: STATE, lifetime: LIFETIME });
           renderRaiseView();
           renderDexView();
+          setTimeout(maybeShowEggPicker, 250); // pick the next egg
         }, primary:true }]
     );
   });
@@ -203,6 +216,7 @@ async function performReset(){
   renderRaiseView();
   renderDexView();
   renderLifetimeBanner();
+  setTimeout(maybeShowEggPicker, 250); // start over by picking an egg
 }
 
 function showIntro(){
@@ -229,7 +243,11 @@ function showIntro2(){
       '</ul>' +
       '<button class="primary-btn" id="introCloseBtn">はじめる！</button>' +
     '</div></div>';
-  document.getElementById('introCloseBtn').addEventListener('click', closeModal);
+  document.getElementById('introCloseBtn').addEventListener('click', function(){
+    closeModal();
+    // first run: straight from "how to play" into picking the first egg
+    setTimeout(maybeShowEggPicker, 200);
+  });
 }
 
 function normalizeState(s){
@@ -241,6 +259,9 @@ function normalizeState(s){
   if (typeof merged.sortPollution !== 'number' || isNaN(merged.sortPollution)) merged.sortPollution = 0;
   if (typeof merged.eco !== 'number' || isNaN(merged.eco)) merged.eco = 0;
   if (typeof merged.groupIdx !== 'number' || !EGG_GROUPS[merged.groupIdx]) merged.groupIdx = fresh.groupIdx;
+  // Saves made before the egg picker existed have no flag — treat those runs
+  // as already started so they aren't interrupted by the picker.
+  if (!(s && typeof s.eggChosen === 'boolean')) merged.eggChosen = true;
   if (typeof merged.pathIndex !== 'number' || merged.pathIndex < 0 || merged.pathIndex > 2) merged.pathIndex = (merged.pathIndex === null ? null : fresh.pathIndex);
   if (typeof merged.finalIndex !== 'number' || merged.finalIndex < 0 || merged.finalIndex > 1) merged.finalIndex = (merged.finalIndex === null ? null : fresh.finalIndex);
   return merged;
@@ -263,6 +284,8 @@ function dismissTitleScreen(){
   if (PENDING_FIRST_RUN_INTRO){
     PENDING_FIRST_RUN_INTRO = false;
     setTimeout(showIntro, 350);
+  } else {
+    setTimeout(maybeShowEggPicker, 350);
   }
 }
 

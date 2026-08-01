@@ -1,4 +1,4 @@
-const CACHE_NAME = 'wakemon-cache-v33';
+const CACHE_NAME = 'wakemon-cache-v35';
 const APP_SHELL = [
   './',
   './index.html',

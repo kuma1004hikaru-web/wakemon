@@ -28,12 +28,8 @@ function dexThumbHTML(groupIdx, pathIndex, finalIndex, slot){
   return blobSVG(nodeLike, 1.0, tier, finalIndex === 1, null);
 }
 
-// Friendly type names per egg-group shape, used as the book's chapter names.
-const GROUP_META = {
-  forest: { icon:'🍃', label:'はっぱタイプ' },
-  river:  { icon:'💧', label:'みずタイプ' },
-  earth:  { icon:'🔥', label:'ほのおタイプ' },
-};
+// GROUP_META (type names/icons) now lives in js/data/monsters.js — the egg
+// picker uses it too.
 
 // Which spread of the dex book is open (one egg group per spread).
 let DEX_PAGE = 0;

@@ -57,6 +57,14 @@ const CUSTOM_ART = {
   32: 'assets/art/slot-32.png',
 };
 
+// Friendly type names per egg-group shape. Used by the dex chapters and the
+// egg picker shown before a new monster is raised.
+const GROUP_META = {
+  forest: { icon:'🍃', label:'はっぱタイプ', blurb:'紙や生ごみが とくい' },
+  river:  { icon:'💧', label:'みずタイプ',  blurb:'びん・かんが とくい' },
+  earth:  { icon:'🔥', label:'ほのおタイプ', blurb:'もえるごみが とくい' },
+};
+
 const EGG_GROUPS = [
   { id:'gp1',  slot:1,  baby:'たまご(1)',  color:'#3F8F5C', accessory:'leaf', shape:'forest' },
   { id:'gp11', slot:11, baby:'たまご(11)', color:'#3AA0C8', accessory:'fin',  shape:'river' },
