@@ -5,7 +5,7 @@ const CYCLE_DAYS = 4;
 // quantity penalty). Cycles that never hit the pollution cap are split into
 // great/normal using this cleaner signal, since the quantity-overage penalty
 // compounds hard across 4 days and would otherwise swamp the comparison.
-const GREAT_TIER_MAX = 40;
+const GREAT_TIER_MAX = 25;
 
 
 function catById(id){ return WASTE_CATEGORIES.find(function(c){ return c.id === id; }); }
@@ -109,17 +109,17 @@ function currentSlot(state){
 function overagePollution(beforeGrams, afterGrams){
   let extra = 0;
   const seg1Start = Math.max(beforeGrams, SOFT_LIMIT_G), seg1End = Math.min(afterGrams, HARD_LIMIT_G);
-  if (seg1End > seg1Start) extra += (seg1End - seg1Start) * 0.15;
+  if (seg1End > seg1Start) extra += (seg1End - seg1Start) * 0.045;
   const seg2Start = Math.max(beforeGrams, HARD_LIMIT_G), seg2End = afterGrams;
-  if (seg2End > seg2Start) extra += (seg2End - seg2Start) * 0.35;
+  if (seg2End > seg2Start) extra += (seg2End - seg2Start) * 0.12;
   return extra;
 }
 
-// Extra pollution per gram when a trash item is sorted into the wrong
-// category. The trash itself still counts toward its true category
-// (it physically exists either way); the miss just makes it dirtier
-// and forfeits the eco points.
-const MISSORT_PENALTY_RATE = 0.15;
+// Flat cost of one wrong answer, so a mistake on a 5g flyer and on a 400g
+// umbrella teach the same lesson. About 10 mistakes fill the gauge. The
+// trash still counts toward its true category either way; a miss only
+// adds this penalty and forfeits the eco points.
+const MISSORT_PENALTY = 10;
 
 function applySortedFeed(state, item, chosenCategoryId){
   const cat = catById(item.categoryId);
@@ -130,7 +130,7 @@ function applySortedFeed(state, item, chosenCategoryId){
   const after = before + grams;
   state.todayGrams = after;
   if (correct) state.eco += grams * cat.ecoRate;
-  const baseGain = grams * cat.pollutionRate + (correct ? 0 : grams * MISSORT_PENALTY_RATE);
+  const baseGain = cat.pollutionPerItem + (correct ? 0 : MISSORT_PENALTY);
   state.sortPollution += baseGain;
   let gain = baseGain;
   gain += overagePollution(before, after);

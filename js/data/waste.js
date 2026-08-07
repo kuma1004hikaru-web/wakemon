@@ -3,25 +3,26 @@
    ============================================================ */
 
 // gramsPerClick: typical real weight of one item (PET bottle, banana peel, etc.)
-// pollutionRate / ecoRate: impact per gram, calibrated so a day matching the
-// national average composition (see AVG_DAY_COMPOSITION_G below) yields
-// moderate, non-fatal pollution — worse-than-average sorting or quantity
-// is what tips a monster into its "bad" form.
+// pollutionPerItem: dirtiness added for ONE correctly sorted item of this
+//   category. Deliberately not per-gram: sorting a heavy item correctly is
+//   good behaviour and must never be punished — weight instead feeds the
+//   daily quantity gauge (SOFT_LIMIT_G) and its overage penalty.
+// ecoRate: recycling points per gram, so bulky recyclables are worth more.
 const WASTE_CATEGORIES = [
   { id:'recycle',     label:'資源ごみ',   sub:'プラ・缶・びん',   icon:'♻️', color:'#3AA0C8',
-    gramsPerClick:25, unit:'ペットボトル1本分', pollutionRate:0.02, ecoRate:0.16,
+    gramsPerClick:25, unit:'ペットボトル1本分', pollutionPerItem:0.5, ecoRate:0.16,
     tip:'細かく砕かれて服やバッグに生まれ変わるよ。' },
   { id:'paper',       label:'紙ごみ',     sub:'新聞・段ボール',   icon:'📄', color:'#D9A441',
-    gramsPerClick:30, unit:'チラシ数枚分', pollutionRate:0.02, ecoRate:0.10,
+    gramsPerClick:30, unit:'チラシ数枚分', pollutionPerItem:0.5, ecoRate:0.10,
     tip:'新しいダンボールやトイレットペーパーになるよ。' },
   { id:'compost',     label:'生ごみ',     sub:'食べ残し',        icon:'🍂', color:'#4C9A5A',
-    gramsPerClick:40, unit:'野菜の皮', pollutionRate:0.00, ecoRate:0.075,
+    gramsPerClick:40, unit:'野菜の皮', pollutionPerItem:0.5, ecoRate:0.075,
     tip:'堆肥（コンポスト）にすれば畑の栄養になるよ。' },
   { id:'burnable',    label:'燃えるごみ', sub:'汚れた紙など',    icon:'🔥', color:'#E4772E',
-    gramsPerClick:20, unit:'汚れた紙', pollutionRate:0.15, ecoRate:0,
+    gramsPerClick:20, unit:'汚れた紙', pollutionPerItem:2.5, ecoRate:0,
     tip:'食べ残しを減らすと、ごみを減らせるよ。' },
   { id:'nonburnable', label:'燃えないごみ・こわれもの', sub:'金属・陶器など', icon:'⚠️', color:'#8A8577',
-    gramsPerClick:18, unit:'小さな金属くず', pollutionRate:0.25, ecoRate:0,
+    gramsPerClick:18, unit:'小さな金属くず', pollutionPerItem:3, ecoRate:0,
     tip:'直して長く使うことも考えてみよう。' },
 ];
 
