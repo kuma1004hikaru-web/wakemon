@@ -1,7 +1,3 @@
-function tierIcon(tier){
-  return tier === 'great' ? '🌟' : (tier === 'normal' ? '🙂' : '💀');
-}
-
 // Every collectible final-form slot across all egg groups, in diagram order.
 function allFinalSlots(){
   const list = [];
@@ -67,9 +63,9 @@ function renderDexView(){
       finals += '<div class="dex-node final r'+rarityOf(slotNum)+' '+(entry ? '' : 'locked')+'"'+(entry ? ' data-key="'+key+'"' : '')+'>' +
         '<span class="node-no">'+slotNum+'</span>' +
         '<div class="thumb">'+dexThumbHTML(gi, pi, fi, slotNum)+'</div>' +
-        '<b>'+(entry ? monsterName(slotNum) : '？？？')+'</b>' +
+        '<b>'+(entry ? tMon(slotNum,'name') : t('dex.unknown'))+'</b>' +
         '<div class="rarity">'+rarityStars(slotNum)+'</div>' +
-        '<div class="sub">'+(entry ? entry.count+'回そだてた' : 'みつけていない')+'</div>' +
+        '<div class="sub">'+(entry ? t('dex.raised', { n: entry.count }) : t('dex.notFound'))+'</div>' +
       '</div>';
     });
     // Mid-tier (2〜3日目) forms stay silhouettes until raised at least once.
@@ -79,8 +75,8 @@ function renderDexView(){
       '<div class="dex-node mid '+(midSeen ? '' : 'locked')+'">' +
         '<span class="node-no">'+path.slot+'</span>' +
         '<div class="thumb">'+dexThumbHTML(gi, pi, null, path.slot)+'</div>' +
-        '<b>'+(midSeen ? monsterName(path.slot) : '？？？')+'</b>' +
-        '<div class="sub">'+(midSeen ? '2〜3日目' : 'みつけていない')+'</div>' +
+        '<b>'+(midSeen ? tMon(path.slot,'name') : t('dex.unknown'))+'</b>' +
+        '<div class="sub">'+(midSeen ? t('dex.mid') : t('dex.notFound'))+'</div>' +
       '</div>' +
       '<div class="dex-arrow">➜</div>' +
       '<div class="dex-finals">'+finals+'</div>' +
@@ -95,33 +91,33 @@ function renderDexView(){
   if (hazEntry) groupObtained++;
   const hazHtml = '' +
     '<div class="dex-hazure">' +
-      '<div class="dex-hazure-label">💀 そだてに<br>しっぱいすると…</div>' +
+      '<div class="dex-hazure-label">'+t('dex.hazLabel')+'</div>' +
       '<div class="dex-arrow">➜</div>' +
       '<div class="dex-node hazure '+(hazEntry ? 'bad' : 'locked')+'"'+(hazEntry ? ' data-key="'+hazKey+'"' : '')+'>' +
         '<span class="node-no">'+hazSlot+'</span>' +
         '<div class="thumb">'+hazureArtHTML(gi)+'</div>' +
-        '<b>'+(hazEntry ? monsterName(hazSlot) : '？？？')+'</b>' +
-        '<div class="sub">'+(hazEntry ? '💀 '+hazEntry.count+'回' : 'みつけていない')+'</div>' +
+        '<b>'+(hazEntry ? tMon(hazSlot,'name') : t('dex.unknown'))+'</b>' +
+        '<div class="sub">'+(hazEntry ? t('dex.hazCount', { n: hazEntry.count }) : t('dex.notFound'))+'</div>' +
       '</div>' +
     '</div>';
 
   const html = '' +
-  '<button class="back-btn" id="dexBackBtn">← もどる</button>' +
+  '<button class="back-btn" id="dexBackBtn">'+t('common.back')+'</button>' +
   '<div class="dex-book">' +
     '<div class="dex-pages">' +
       '<div class="page page-single">' +
         '<div class="page-topbar">' +
           '<span class="page-egg">'+dexThumbHTML(gi, null, null, g.slot)+'</span>' +
           '<span class="page-title-wrap">' +
-            '<b class="page-type">'+meta.icon+' '+meta.label+'</b>' +
-            '<span class="page-progress">みつけた '+groupObtained+' / '+groupTotal+'　（ぜんぶで '+obtainedCount+' / '+totalSlots+'）</span>' +
+            '<b class="page-type">'+meta.icon+' '+tType(g.shape,'label')+'</b>' +
+            '<span class="page-progress">'+t('dex.found', { a: groupObtained, b: groupTotal, c: obtainedCount, d: totalSlots })+'</span>' +
           '</span>' +
         '</div>' +
         rows +
         hazHtml +
-        '<div class="page-note">「？？？」はまだ出会っていないモンスター。カードをタップでくわしく見られるよ。</div>' +
-        '<button class="page-turn prev" id="dexPrevBtn" title="前のタイプ">↶</button>' +
-        '<button class="page-turn next" id="dexNextBtn" title="次のタイプ">↷</button>' +
+        '<div class="page-note">'+t('dex.note')+'</div>' +
+        '<button class="page-turn prev" id="dexPrevBtn" title="'+t('dex.prev')+'">↶</button>' +
+        '<button class="page-turn next" id="dexNextBtn" title="'+t('dex.next')+'">↷</button>' +
       '</div>' +
     '</div>' +
     '<div class="page-num">- '+(gi+1)+' / '+EGG_GROUPS.length+' -</div>' +
@@ -143,12 +139,6 @@ function renderDexView(){
   });
 }
 
-function tierEyebrow(tier){
-  if (tier === 'great') return '🌟 かんぺきモンスター';
-  if (tier === 'normal') return '🙂 ふつうモンスター';
-  return '💀 はずれモンスター';
-}
-
 function showDexDetail(key){
   const slotNum = parseInt(key.replace('slot',''), 10);
 
@@ -157,17 +147,17 @@ function showDexDetail(key){
   if (hazIdx >= 0){
     const hz = COLLECTION[key];
     openModal(
-      '💀 ハズレモンスター',
-      monsterName(slotNum),
-      monsterDesc(slotNum),
+      t('dex.hazMonster'),
+      tMon(slotNum,'name'),
+      tMon(slotNum,'desc'),
       [
-        { label:'ずかん番号', value: 'No.' + slotNum },
-        { label:'なってしまった回数', value: (hz ? hz.count : 0) + ' 回' },
-        { label:'はじめて出た日', value: hz ? new Date(hz.firstDate).toLocaleDateString('ja-JP') : '-' }
+        { label:t('dex.no'), value: 'No.' + slotNum },
+        { label:t('dex.becameCount'), value: t('dex.times', { n: (hz ? hz.count : 0) }) },
+        { label:t('dex.firstAppeared'), value: hz ? new Date(hz.firstDate).toLocaleDateString() : '-' }
       ],
       'bad',
       hazureArtHTML(hazIdx),
-      [{ text:'とじる', action: closeModal, primary:true }]
+      [{ text:t('common.close'), action: closeModal, primary:true }]
     );
     return;
   }
@@ -177,16 +167,16 @@ function showDexDetail(key){
   const tier = tierForPath(node.pathIndex);
   const fakeState = { groupIdx: node.groupIdx, pathIndex: node.pathIndex, finalIndex: node.finalIndex };
   openModal(
-    rarityStars(slotNum) + ' ' + rarityLabel(slotNum),
-    monsterName(slotNum),
-    monsterDesc(slotNum),
+    rarityStars(slotNum) + ' ' + tRarityLabel(rarityOf(slotNum)),
+    tMon(slotNum,'name'),
+    tMon(slotNum,'desc'),
     [
-      { label:'ずかん番号', value: 'No.' + slotNum },
-      { label:'育成回数', value: entry.count + ' 回' },
-      { label:'はじめて出会った日', value: new Date(entry.firstDate).toLocaleDateString('ja-JP') }
+      { label:t('dex.no'), value: 'No.' + slotNum },
+      { label:t('dex.raiseCount'), value: t('dex.times', { n: entry.count }) },
+      { label:t('dex.firstMet'), value: new Date(entry.firstDate).toLocaleDateString() }
     ],
     tier,
     monsterSVG(fakeState, 3),
-    [{ text:'とじる', action: closeModal, primary:true }]
+    [{ text:t('common.close'), action: closeModal, primary:true }]
   );
 }

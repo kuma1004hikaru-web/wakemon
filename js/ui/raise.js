@@ -45,19 +45,19 @@ function renderWarning(){
   const overAvg = STATE.todayGrams > SOFT_LIMIT_G;
   const overDouble = STATE.todayGrams > HARD_LIMIT_G;
   if (STATE.isBadLocked){
-    return '<div class="warning hard">😷 <div>ごみの量や分別ミスが積み重なって、モンスターが汚れてしまった…。このサイクルは「はずれ」の姿で完成しそう。次はもう少し減らして、正しく分別してみよう。</div></div>';
+    return '<div class="warning hard">😷 <div>'+t('warn.locked')+'</div></div>';
   }
   if (lvl === 2){
     if (overDouble){
-      return '<div class="warning hard">⚠️ <div>今日はもう'+formatGrams(STATE.todayGrams)+'！全国平均の2倍('+formatGrams(HARD_LIMIT_G)+')に近いよ。このままだとモンスターが汚れてしまうよ。</div></div>';
+      return '<div class="warning hard">⚠️ <div>'+t('warn.hardOver', { g: formatGrams(STATE.todayGrams), limit: formatGrams(HARD_LIMIT_G) })+'</div></div>';
     }
-    return '<div class="warning hard">⚠️ <div>よごれ度がかなり高くなってきたよ！燃えるごみ・燃えないごみが多いかも。資源ごみや生ごみに分別できないか見直してみよう。</div></div>';
+    return '<div class="warning hard">⚠️ <div>'+t('warn.hardDirty')+'</div></div>';
   }
   if (lvl === 1){
     if (overAvg){
-      return '<div class="warning soft">💡 <div>今日は'+formatGrams(STATE.todayGrams)+'。全国平均('+formatGrams(SOFT_LIMIT_G)+')を超えたよ。ちょっと減らせないか考えてみよう。</div></div>';
+      return '<div class="warning soft">💡 <div>'+t('warn.softOver', { g: formatGrams(STATE.todayGrams), limit: formatGrams(SOFT_LIMIT_G) })+'</div></div>';
     }
-    return '<div class="warning soft">💡 <div>よごれ度が少しずつ上がってきているよ。分別の仕方を見直してみよう。</div></div>';
+    return '<div class="warning soft">💡 <div>'+t('warn.softDirty')+'</div></div>';
   }
   return '';
 }
@@ -87,19 +87,19 @@ function renderSceneStats(){
   const markerPct = Math.round((SOFT_LIMIT_G/HARD_LIMIT_G)*100);
   return '' +
   '<div class="stat-row">' +
-    '<div class="stat-label"><span>今日出したゴミ</span><span>'+formatGrams(STATE.todayGrams)+'</span></div>' +
+    '<div class="stat-label"><span>'+t('stats.today')+'</span><span>'+formatGrams(STATE.todayGrams)+'</span></div>' +
     '<div class="stat-track">' +
       '<div class="stat-fill" style="width:'+gaugePct+'%; background:'+gaugeColor+';"></div>' +
       '<div class="gauge-marker" style="left:'+markerPct+'%;"></div>' +
     '</div>' +
-    '<div class="stat-caption">全国平均 '+formatGrams(SOFT_LIMIT_G)+'／日（環境省 令和5年度調べ）</div>' +
+    '<div class="stat-caption">'+t('stats.avgCaption', { g: formatGrams(SOFT_LIMIT_G) })+'</div>' +
   '</div>' +
   '<div class="stat-row">' +
-    '<div class="stat-label"><span>汚れ度</span><span>'+Math.round(STATE.pollution)+' / 100</span></div>' +
+    '<div class="stat-label"><span>'+t('stats.pollution')+'</span><span>'+Math.round(STATE.pollution)+' / 100</span></div>' +
     '<div class="stat-track"><div class="stat-fill" style="width:'+STATE.pollution+'%; background:'+pColor+';"></div></div>' +
   '</div>' +
   '<div class="stat-row" style="margin-bottom:2px;">' +
-    '<div class="stat-label"><span>リサイクル度</span><span>'+Math.round(STATE.eco)+' pt</span></div>' +
+    '<div class="stat-label"><span>'+t('stats.recycle')+'</span><span>'+Math.round(STATE.eco)+' pt</span></div>' +
     '<div class="stat-track"><div class="stat-fill" style="width:'+ecoPct+'%; background:var(--marigold);"></div></div>' +
   '</div>';
 }
@@ -108,7 +108,7 @@ function openStatsDetail(){
   document.getElementById('feedModalRoot').innerHTML =
     '<div class="feed-modal-overlay" id="statsDetailOverlay">' +
       '<div class="feed-modal-card" style="border-radius:24px; max-width:400px; margin:auto;">' +
-        '<div class="feed-modal-header"><b>📊 いまのようす</b><button class="feed-modal-close" id="statsDetailClose">✕</button></div>' +
+        '<div class="feed-modal-header"><b>'+t('stats.title')+'</b><button class="feed-modal-close" id="statsDetailClose">✕</button></div>' +
         renderSceneStats() +
         renderWarning() +
       '</div>' +
@@ -120,24 +120,81 @@ function openStatsDetail(){
 }
 
 /* ============================================================
+   Language picker: shown once on the very first run, and any time
+   from the ⚙️ button. Re-renders every visible screen on change.
+   ============================================================ */
+function renderLangPicker(showBack){
+  let cards = '';
+  LANGS.forEach(function(l){
+    cards += '<button class="lang-card'+(l.code === LANG ? ' current' : '')+'" data-lang="'+l.code+'">' +
+      '<b>'+l.label+'</b><span>'+l.sub+'</span>' +
+    '</button>';
+  });
+  return '' +
+    '<div class="egg-pick-overlay lang-overlay" id="langPickOverlay">' +
+      '<div class="egg-pick-title">'+t('lang.title')+'</div>' +
+      '<div class="egg-pick-sub">'+t('lang.sub')+'</div>' +
+      '<div class="lang-grid">'+cards+'</div>' +
+      (showBack ? '<button class="shuffle-btn" id="langCloseBtn">'+t('common.close')+'</button>' : '') +
+    '</div>';
+}
+
+let LANG_PICKER_NEXT = null;   // what to run once the picker is dismissed
+
+function openLangPicker(next){
+  LANG_PICKER_NEXT = next || null;
+  document.getElementById('modalRoot').innerHTML = renderLangPicker(true);
+  document.querySelectorAll('.lang-card').forEach(function(btn){
+    btn.addEventListener('click', function(){ applyLang(btn.getAttribute('data-lang')); });
+  });
+  document.getElementById('langCloseBtn').addEventListener('click', function(){
+    closeModal();
+    const n = LANG_PICKER_NEXT; LANG_PICKER_NEXT = null;
+    if (n) n();
+  });
+}
+
+// Swap language and repaint everything currently on screen, keeping the
+// picker open so the change is visible before continuing.
+function applyLang(code){
+  setLang(code);
+  applyStaticText();
+  renderRaiseView();
+  renderLifetimeBanner();
+  renderTitleMonster();
+  if (ACTIVE_TAB === 'dex') renderDexView();
+  openLangPicker(LANG_PICKER_NEXT);
+}
+
+// Fill the bits of markup that live in index.html.
+function applyStaticText(){
+  document.querySelectorAll('[data-i18n]').forEach(function(el){
+    el.innerHTML = t(el.getAttribute('data-i18n'));
+  });
+  document.querySelectorAll('[data-i18n-title]').forEach(function(el){
+    el.setAttribute('title', t(el.getAttribute('data-i18n-title')));
+  });
+}
+
+/* ============================================================
    Egg picker: shown before a new monster starts so the player
    chooses which type to raise instead of getting a random one.
    ============================================================ */
 function renderEggPicker(){
   let cards = '';
   EGG_GROUPS.forEach(function(g, gi){
-    const meta = GROUP_META[g.shape] || { icon:'❔', label:g.baby, blurb:'' };
+    const meta = GROUP_META[g.shape] || { icon:'❔' };
     const art = customArtHTML(g.slot) || eggSVG(g.color, null);
     cards += '<button class="egg-card" data-egg="'+gi+'">' +
       '<div class="egg-card-art">'+art+'</div>' +
-      '<b>'+meta.icon+' '+meta.label+'</b>' +
-      '<span>'+meta.blurb+'</span>' +
+      '<b>'+meta.icon+' '+tType(g.shape,'label')+'</b>' +
+      '<span>'+tType(g.shape,'blurb')+'</span>' +
     '</button>';
   });
   return '' +
     '<div class="egg-pick-overlay" id="eggPickOverlay">' +
-      '<div class="egg-pick-title">どのたまごを そだてる？</div>' +
-      '<div class="egg-pick-sub">えらんだたまごから モンスターが生まれるよ</div>' +
+      '<div class="egg-pick-title">'+t('egg.title')+'</div>' +
+      '<div class="egg-pick-sub">'+t('egg.sub')+'</div>' +
       '<div class="egg-grid">'+cards+'</div>' +
     '</div>';
 }
@@ -182,13 +239,13 @@ function renderWeeklyChart(){
     cols += '<div class="week-col'+(isToday ? ' today' : '')+'">' +
       '<div class="week-val">'+(v > 0 ? formatGrams(v) : '－')+'</div>' +
       '<div class="week-bar-track"><div class="week-bar" style="height:'+hPct+'%; background:'+weekBarColor(v)+';"></div></div>' +
-      '<div class="week-day">'+(isToday ? 'きょう' : label)+'</div>' +
+      '<div class="week-day">'+(isToday ? t('week.today') : label)+'</div>' +
     '</div>';
   });
 
   return '' +
     '<div class="week-chart">' +
-      '<div class="week-avg-line" style="bottom:'+avgPct+'%;"><span>全国平均 '+formatGrams(SOFT_LIMIT_G)+'</span></div>' +
+      '<div class="week-avg-line" style="bottom:'+avgPct+'%;"><span>'+t('week.avg', { g: formatGrams(SOFT_LIMIT_G) })+'</span></div>' +
       cols +
     '</div>' +
     '<div class="stat-caption">'+AVG_SOURCE_LABEL+'</div>';
@@ -198,9 +255,9 @@ function openWeeklyLog(){
   document.getElementById('feedModalRoot').innerHTML =
     '<div class="feed-modal-overlay" id="weeklyLogOverlay">' +
       '<div class="feed-modal-card" style="border-radius:24px; max-width:400px; margin:auto;">' +
-        '<div class="feed-modal-header"><b>📊 1しゅうかんのごみきろく</b><button class="feed-modal-close" id="weeklyLogClose">✕</button></div>' +
+        '<div class="feed-modal-header"><b>'+t('week.title')+'</b><button class="feed-modal-close" id="weeklyLogClose">✕</button></div>' +
         renderWeeklyChart() +
-        '<div class="week-note">えさにしたごみの量を、日にちごとにきろくしているよ。全国平均より下をめざそう！</div>' +
+        '<div class="week-note">'+t('week.note')+'</div>' +
       '</div>' +
     '</div>';
   document.getElementById('weeklyLogClose').addEventListener('click', closeFeedModal);
@@ -222,7 +279,7 @@ function renderGraph(){
       '<div class="graph-icon">'+c.icon+'</div>' +
     '</div>';
   });
-  return '<div class="graph-title"><span>このサイクルで出したごみ</span><b>合計 '+formatGrams(cycleTotal(STATE))+'</b></div>' +
+  return '<div class="graph-title"><span>'+t('feed.graphTitle')+'</span><b>'+t('feed.total', { g: formatGrams(cycleTotal(STATE)) })+'</b></div>' +
     '<div class="graph">'+cols+'</div>';
 }
 
@@ -247,13 +304,13 @@ function rollFeedPick(){
 
 function renderTrashButtons(){
   let html = '<div class="trash-grid">';
-  FEED_PICK.forEach(function(t){
+  FEED_PICK.forEach(function(item){
     // neutral tile color so the button itself doesn't leak the answer
-    html += '<button class="feed-tile" data-trash="'+t.id+'" style="--tile-color:#8A8577;">' +
-      '<div class="feed-gram">'+t.grams+'g</div>' +
-      '<div class="feed-icon">'+t.icon+'</div>' +
-      '<b>'+t.name+'</b>' +
-      '<span>どこにすてる？</span>' +
+    html += '<button class="feed-tile" data-trash="'+item.id+'" style="--tile-color:#8A8577;">' +
+      '<div class="feed-gram">'+item.grams+'g</div>' +
+      '<div class="feed-icon">'+item.icon+'</div>' +
+      '<b>'+tTrash(item,'name')+'</b>' +
+      '<span>'+t('feed.where')+'</span>' +
     '</button>';
   });
   html += '</div>';
@@ -265,8 +322,8 @@ function renderSortCategoryButtons(){
   WASTE_CATEGORIES.forEach(function(c){
     html += '<button class="feed-tile" data-sort-cat="'+c.id+'" style="--tile-color:'+c.color+';">' +
       '<div class="feed-icon">'+c.icon+'</div>' +
-      '<b>'+c.label+'</b>' +
-      '<span>'+c.sub+'</span>' +
+      '<b>'+tCat(c,'label')+'</b>' +
+      '<span>'+tCat(c,'sub')+'</span>' +
     '</button>';
   });
   html += '</div>';
@@ -277,13 +334,13 @@ function renderSortFeedback(){
   if (!FEED_RESULT) return '';
   const item = FEED_RESULT.item;
   const cat = catById(item.categoryId);
+  const vars = { name: tTrash(item,'name'), cat: tCat(cat,'label'), hint: tTrash(item,'hint') };
   if (FEED_RESULT.correct){
-    return '<div class="sort-feedback good"><span>⭕</span><div><b>せいかい！</b>' +
-      item.name + 'は「' + cat.label + '」。' + item.hint + '</div></div>';
+    return '<div class="sort-feedback good"><span>⭕</span><div><b>'+t('feed.correctHead')+'</b>' +
+      t('feed.correctBody', vars) + '</div></div>';
   }
-  return '<div class="sort-feedback bad"><span>❌</span><div><b>ざんねん…</b>' +
-    item.name + 'は「' + cat.label + '」だよ。' + item.hint +
-    ' まちがえたぶん、よごれ度が上がってしまった…</div></div>';
+  return '<div class="sort-feedback bad"><span>❌</span><div><b>'+t('feed.wrongHead')+'</b>' +
+    t('feed.wrongBody', vars) + '</div></div>';
 }
 
 /* ============================================================
@@ -298,29 +355,29 @@ function renderFeedModalBody(){
     return '' +
       '<div class="sort-question">' +
         '<div class="sort-item-big">'+item.icon+'</div>' +
-        '<div class="pick-title">「'+item.name+'」('+item.grams+'g)は<br>どこに分別する？</div>' +
+        '<div class="pick-title">'+t('feed.sortQ', { name: tTrash(item,'name'), g: item.grams })+'</div>' +
       '</div>' +
       renderSortCategoryButtons() +
-      '<button class="back-btn sort-back" id="sortBackBtn">← ほかのごみにする</button>';
+      '<button class="back-btn sort-back" id="sortBackBtn">'+t('feed.other')+'</button>';
   }
 
   // step 1: which trash came out?
   return '' +
     '<div class="scene-toast" id="toast"></div>' +
     renderSortFeedback() +
-    '<div class="pick-title">🗑️ どのごみが出たかな？</div>' +
+    '<div class="pick-title">'+t('feed.pick')+'</div>' +
     renderTrashButtons() +
-    '<button class="shuffle-btn" id="shuffleTrashBtn">🔄 ほかのごみを見る</button>' +
+    '<button class="shuffle-btn" id="shuffleTrashBtn">'+t('feed.shuffle')+'</button>' +
     '<div style="height:12px;"></div>' +
     renderGraph() +
-    '<button class="primary-btn" id="nextDayBtn">'+(isLastDay ? '🌟 モンスターをかんせいさせる！' : '🌙 今日を終えて次の日へ')+'</button>';
+    '<button class="primary-btn" id="nextDayBtn">'+(isLastDay ? t('feed.finish') : t('feed.nextDay'))+'</button>';
 }
 
 function renderFeedModalShell(){
   return '' +
   '<div class="feed-modal-overlay" id="feedModalOverlay">' +
     '<div class="feed-modal-card">' +
-      '<div class="feed-modal-header"><b>🍱 えさをあげる</b><button class="feed-modal-close" id="feedModalCloseBtn">✕</button></div>' +
+      '<div class="feed-modal-header"><b>'+t('feed.title')+'</b><button class="feed-modal-close" id="feedModalCloseBtn">✕</button></div>' +
       '<div id="feedModalBody">' + renderFeedModalBody() + '</div>' +
     '</div>' +
   '</div>';
@@ -404,14 +461,14 @@ function renderRaiseView(){
     '<div class="scene-monster-area">' +
       '<div class="scene-monster-zone" id="sceneMonsterZone" style="width:'+sceneSizePx+'px; height:'+sceneSizePx+'px;">' + svg + '</div>' +
       '<div class="scene-caption">' +
-        '<span class="scene-species">'+monsterName(currentSlot(STATE))+'（'+STATE.day+'日目/'+CYCLE_DAYS+'日）</span>' +
+        '<span class="scene-species">'+tMon(currentSlot(STATE),'name')+t('scene.day', { day: STATE.day, total: CYCLE_DAYS })+'</span>' +
         '<span class="scene-pips">'+renderDayPips()+'</span>' +
       '</div>' +
     '</div>' +
     '<div class="scene-actions">' +
-      '<button class="big-action-btn" id="feedBigBtn"><span class="baticon">🍱</span>えさ<br>あげる</button>' +
-      '<button class="big-action-btn" id="dexBigBtn"><span class="baticon">📖</span>ずかん</button>' +
-      '<button class="big-action-btn" id="logBigBtn"><span class="baticon">📊</span>きろく</button>' +
+      '<button class="big-action-btn" id="feedBigBtn"><span class="baticon">🍱</span>'+t('scene.feed')+'</button>' +
+      '<button class="big-action-btn" id="dexBigBtn"><span class="baticon">📖</span>'+t('scene.dex')+'</button>' +
+      '<button class="big-action-btn" id="logBigBtn"><span class="baticon">📊</span>'+t('scene.log')+'</button>' +
     '</div>' +
   '</div>';
 
@@ -424,7 +481,7 @@ function attachRaiseHandlers(){
   document.getElementById('dexBigBtn').addEventListener('click', function(){ setTab('dex'); });
   document.getElementById('logBigBtn').addEventListener('click', openWeeklyLog);
   document.getElementById('miniHud').addEventListener('click', openStatsDetail);
-  document.getElementById('sceneSettingsBtn').addEventListener('click', resetAll);
+  document.getElementById('sceneSettingsBtn').addEventListener('click', openSettings);
 }
 
 /* ------------------------------------------------------------
@@ -456,5 +513,5 @@ function renderLifetimeBanner(){
   const el = document.getElementById('lifetimeBanner');
   if (!el || !LIFETIME) return;
   const total = WASTE_CATEGORIES.reduce(function(sum,c){ return sum + (LIFETIME[c.id]||0); }, 0);
-  el.innerHTML = '<span class="lb-icon">🗑️</span> これまでに出したごみ　<b>'+formatGrams(total)+'</b>';
+  el.innerHTML = '<span class="lb-icon">🗑️</span> '+t('scene.lifetime')+'　<b>'+formatGrams(total)+'</b>';
 }

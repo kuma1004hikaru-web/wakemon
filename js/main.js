@@ -68,15 +68,15 @@ async function failCycle(){
   renderRaiseView(); // show the current monster, then break it down with the effect
   playEvolveEffect(function(){
     openModal(
-      '…そだて しっぱい',
-      monsterName(hazSlot),
-      monsterDesc(hazSlot) + ' 育成はここで終わり。次はごみを減らして、正しく分別してみよう！',
+      t('result.fail'),
+      tMon(hazSlot,'name'),
+      tMon(hazSlot,'desc') + ' ' + t('result.failTail'),
       [
-        { label:'このサイクルのごみ合計', value: formatGrams(total) }
+        { label:t('result.cycleTotal'), value: formatGrams(total) }
       ],
       'bad',
       hazureArtHTML(gi),
-      [{ text:'次のモンスターへ →', action: function(){
+      [{ text:t('result.next'), action: function(){
           closeModal();
           BAD_ALERT_SHOWN = false;
           STATE = freshState(finishedGroupIdx);
@@ -126,8 +126,8 @@ async function finishCycle(){
   const finalSlot = currentSlot(STATE);
   const tier = tierForPath(STATE.pathIndex);
   const key = 'slot' + finalSlot;
-  const finalName = monsterName(finalSlot);
-  const finalDesc = monsterDesc(finalSlot);
+  const finalName = tMon(finalSlot,'name');
+  const finalDesc = tMon(finalSlot,'desc');
 
   if (!COLLECTION[key]){
     COLLECTION[key] = { count: 0, firstDate: new Date().toISOString() };
@@ -146,7 +146,7 @@ async function finishCycle(){
 
   const total = cycleTotal(STATE);
   const finishedGroupIdx = STATE.groupIdx;
-  const eyebrow = rarityStars(finalSlot) + ' ' + rarityLabel(finalSlot);
+  const eyebrow = rarityStars(finalSlot) + ' ' + tRarityLabel(rarityOf(finalSlot));
 
   // evolution flourish over the scene, then the reveal modal
   playEvolveEffect(function(){
@@ -155,13 +155,13 @@ async function finishCycle(){
       finalName,
       finalDesc,
       [
-        { label:'レア度', value: rarityLabel(finalSlot) },
-        { label:'このサイクルのごみ合計', value: formatGrams(total) },
-        { label:'リサイクル度', value: Math.round(STATE.eco) + ' pt' }
+        { label:t('result.rarity'), value: tRarityLabel(rarityOf(finalSlot)) },
+        { label:t('result.cycleTotal'), value: formatGrams(total) },
+        { label:t('stats.recycle'), value: Math.round(STATE.eco) + ' pt' }
       ],
       tier,
       monsterSVG(STATE, 3),
-      [{ text:'次のモンスターへ →', action: function(){
+      [{ text:t('result.next'), action: function(){
           closeModal();
           BAD_ALERT_SHOWN = false;
           STATE = freshState(finishedGroupIdx);
@@ -190,15 +190,31 @@ function setTab(tab){
   if (tab === 'raise') renderRaiseView();
 }
 
+// ⚙️ opens a small settings menu (language / reset) instead of jumping
+// straight to the destructive reset confirm.
+function openSettings(){
+  openModal(
+    '⚙️',
+    t('lang.settings'),
+    '',
+    null, 'good', null,
+    [
+      { text: t('lang.settings'), action: function(){ openLangPicker(null); }, primary:true },
+      { text: t('common.settings'), action: resetAll, primary:false },
+      { text: t('common.close'), action: closeModal, primary:false }
+    ]
+  );
+}
+
 function resetAll(){
   openModal(
-    '確認',
-    'データをリセットしますか？',
-    'これまで育てたモンスターの記録もすべて消えます。この操作は元に戻せません。',
+    t('reset.title'),
+    t('reset.q'),
+    t('reset.body'),
     null, 'bad', null,
     [
-      { text:'キャンセル', action: closeModal, primary:false },
-      { text:'リセットする', action: performReset, primary:true }
+      { text:t('common.cancel'), action: closeModal, primary:false },
+      { text:t('reset.do'), action: performReset, primary:true }
     ]
   );
 }
@@ -222,27 +238,27 @@ async function performReset(){
 
 function showIntro(){
   openModal(
-    'はじめに',
-    'ようこそ、ワケモンへ！',
-    'ごみを分別して、選択式でモンスターに「餌」としてあげよう。うまく分別できるとすくすく育つよ。',
+    t('intro.eyebrow'),
+    t('intro.title'),
+    t('intro.body'),
     null, 'good', null,
-    [{ text:'あそびかたを見る', action: showIntro2, primary:true }]
+    [{ text:t('intro.see'), action: showIntro2, primary:true }]
   );
 }
 function showIntro2(){
   document.getElementById('modalRoot').innerHTML =
     '<div class="modal-overlay"><div class="modal-card">' +
-      '<div class="modal-eyebrow">あそびかた</div>' +
-      '<h2 class="good">4日間で1匹そだてよう</h2>' +
+      '<div class="modal-eyebrow">'+t('howto.eyebrow')+'</div>' +
+      '<h2 class="good">'+t('howto.title')+'</h2>' +
       '<ul class="intro-list">' +
-        '<li>🍱 出てきたごみを選んで、どこに分別するかクイズに答えよう。正解すると上手に育つよ（実際のグラム数が加算される）</li>' +
-        '<li>❌ 分別をまちがえるとよごれ度が上がるけど、正しい分別方法を教えてもらえるよ</li>' +
-        '<li>⚖️ 全国平均「1人1日475g」（環境省調べ）を超えると警告、2倍(950g)に近づくと危険！</li>' +
-        '<li>🌟 分別バッチリ・出しすぎなしなら「かんぺき」、ほどほどなら「ふつう」、出しすぎ＆分別ミスが重なると「はずれ」になるよ</li>' +
-        '<li>📊 出したごみの量はグラム表示のグラフでいつでも確認できるよ</li>' +
-        '<li>📖 4日たったら完成！ずかんに登録して次の子を育てよう</li>' +
+        '<li>'+t('howto.1')+'</li>' +
+        '<li>'+t('howto.2')+'</li>' +
+        '<li>'+t('howto.3')+'</li>' +
+        '<li>'+t('howto.4')+'</li>' +
+        '<li>'+t('howto.5')+'</li>' +
+        '<li>'+t('howto.6')+'</li>' +
       '</ul>' +
-      '<button class="primary-btn" id="introCloseBtn">はじめる！</button>' +
+      '<button class="primary-btn" id="introCloseBtn">'+t('howto.start')+'</button>' +
     '</div></div>';
   document.getElementById('introCloseBtn').addEventListener('click', function(){
     closeModal();
@@ -277,16 +293,26 @@ function renderTitleMonster(){
 }
 
 let PENDING_FIRST_RUN_INTRO = false;
+let PENDING_LANG_CHOICE = false;   // true until a language has ever been picked
 
 function dismissTitleScreen(){
   const el = document.getElementById('titleScreen');
   if (!el) return;
   el.classList.add('hide');
-  if (PENDING_FIRST_RUN_INTRO){
-    PENDING_FIRST_RUN_INTRO = false;
-    setTimeout(showIntro, 350);
+  // First run order: language → how to play → egg picker.
+  const afterLang = function(){
+    if (PENDING_FIRST_RUN_INTRO){
+      PENDING_FIRST_RUN_INTRO = false;
+      setTimeout(showIntro, 250);
+    } else {
+      setTimeout(maybeShowEggPicker, 250);
+    }
+  };
+  if (PENDING_LANG_CHOICE){
+    PENDING_LANG_CHOICE = false;
+    setTimeout(function(){ openLangPicker(afterLang); }, 350);
   } else {
-    setTimeout(maybeShowEggPicker, 350);
+    setTimeout(afterLang, 350);
   }
 }
 
@@ -297,8 +323,13 @@ function initTitleScreen(){
 }
 
 async function init(){
+  const savedLang = loadLang();
+  if (savedLang) setLang(savedLang);
+  PENDING_LANG_CHOICE = !savedLang;
+  applyStaticText();
+
   initTitleScreen();
-  document.getElementById('resetBtn').addEventListener('click', resetAll);
+  document.getElementById('resetBtn').addEventListener('click', openSettings);
 
   const saved = await loadGameData();
   const savedCollection = await loadCollection();
