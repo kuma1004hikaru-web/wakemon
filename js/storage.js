@@ -57,6 +57,7 @@ function deleteAllSaves(){
   try{ localStorage.removeItem(GAME_KEY); }catch(e){}
   try{ localStorage.removeItem(COLLECTION_KEY); }catch(e){}
   try{ localStorage.removeItem(DAILY_KEY); }catch(e){}
+  try{ localStorage.removeItem(ECO_KEY); }catch(e){}
 }
 
 // Debounced save for rapid taps (feeding): collapses many quick saves

@@ -21,6 +21,19 @@ function chooseEgg(groupIdx){
   renderTitleMonster();
 }
 
+// Ticking a real-world reduce action adds recycling points without adding
+// any trash — the one place where doing less earns more. Points feed the
+// same eco stat the completion modal shows.
+function onEcoToggle(id){
+  const gained = ecoToggle(id);
+  if (gained && STATE){
+    STATE.eco += gained;
+    scheduleSaveGameData();
+    renderRaiseView();
+  }
+  refreshWeeklyLogBody();
+}
+
 // Feed straight from the dictionary. The player already looked the answer
 // up, so it counts as a correct sort and runs through exactly the same
 // rules as the quiz — same grams, dirtiness and recycling points.
@@ -272,6 +285,7 @@ async function performReset(){
   LIFETIME = emptyBreakdown();
   COLLECTION = {};
   DAILY_LOG = {};
+  ECO_DATA = { done:{}, streak:0, best:0 };
   BAD_ALERT_SHOWN = false;
   await saveGameData({ state: STATE, lifetime: LIFETIME });
   await saveCollection(COLLECTION);
@@ -398,6 +412,7 @@ async function init(){
   }
   COLLECTION = savedCollection || {};
   DAILY_LOG = loadDailyLog();
+  ECO_DATA = loadEco();
   BAD_ALERT_SHOWN = STATE.isBadLocked; // don't re-trigger alert on reload
 
   if (!saved){

@@ -429,6 +429,65 @@
     background:#F4F7EF; border-radius:12px; padding:9px 12px;
   }
 
+  /* ---- last-week comparison ---- */
+  .week-compare{
+    margin-top:12px; padding:10px 12px; border-radius:12px;
+    font-family:'Zen Maru Gothic',sans-serif; font-weight:700; font-size:12.5px; line-height:1.5;
+  }
+  .week-compare span{
+    display:block; font-family:'JetBrains Mono',monospace; font-weight:500;
+    font-size:9.5px; margin-top:3px; opacity:0.8;
+  }
+  .week-compare.good{ background:#E8F6E3; color:#25543F; border:1.5px solid #BCE3B0; }
+  .week-compare.bad{ background:#FBE9E4; color:#8C3116; border:1.5px solid #F3C9BD; }
+  .week-compare.flat{ background:#F1F3EC; color:var(--ink-soft); border:1.5px solid var(--line); font-weight:500; }
+
+  /* ---- eco actions ---- */
+  .eco-box{
+    margin-top:14px; padding:12px; border-radius:16px;
+    background:#F2FAF3; border:2px solid #CDE8D2;
+  }
+  .eco-head{ display:flex; align-items:center; justify-content:space-between; gap:8px; }
+  .eco-head b{
+    font-family:'Zen Maru Gothic',sans-serif; font-weight:900; font-size:13.5px; color:var(--pine-dark);
+  }
+  .eco-streak{
+    flex:0 0 auto; font-family:'Zen Maru Gothic',sans-serif; font-weight:700; font-size:10.5px;
+    color:#8C3116; background:#FFE9DF; border-radius:999px; padding:3px 9px; white-space:nowrap;
+  }
+  .eco-sub{ font-size:10px; line-height:1.6; color:var(--ink-soft); margin:4px 0 9px; }
+  .eco-item{
+    display:flex; align-items:center; gap:8px; width:100%;
+    background:var(--card); border:1.5px solid var(--line); border-radius:12px;
+    padding:9px 10px; margin-bottom:6px; cursor:pointer; text-align:left;
+    font-family:'Zen Maru Gothic',sans-serif; font-size:12px; color:var(--ink);
+    transition:transform .1s ease, border-color .12s ease, background .12s ease;
+  }
+  .eco-item:active{ transform:scale(0.98); }
+  .eco-item.on{ background:#E8F6E3; border-color:#8CC896; }
+  .eco-check{ font-size:15px; color:var(--pine); flex:0 0 auto; }
+  .eco-icon{ font-size:15px; flex:0 0 auto; }
+  .eco-label{ flex:1 1 auto; min-width:0; line-height:1.35; }
+  .eco-p{
+    flex:0 0 auto; font-family:'JetBrains Mono',monospace; font-size:9.5px;
+    color:#C9A227; font-weight:700;
+  }
+
+  /* ---- real-world equivalents ---- */
+  .equiv-box{
+    margin-top:12px; padding:11px 12px; border-radius:14px;
+    background:#FFFBEF; border:2px solid #F0D79A;
+  }
+  .equiv-title{
+    font-family:'Zen Maru Gothic',sans-serif; font-weight:700; font-size:12px;
+    color:#8A6D1F; margin-bottom:6px;
+  }
+  .equiv-row{ display:flex; align-items:center; gap:8px; padding:3px 0; }
+  .equiv-icon{ font-size:16px; }
+  .equiv-row b{
+    font-family:'Zen Maru Gothic',sans-serif; font-weight:700; font-size:12px; color:var(--ink);
+  }
+
   /* ---- feed modal (bottom-sheet style) ---- */
   .feed-modal-overlay{
     position:fixed; inset:0; background:rgba(30,40,30,0.5); backdrop-filter:blur(2px);

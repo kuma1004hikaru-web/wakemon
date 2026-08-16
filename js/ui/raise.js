@@ -253,19 +253,91 @@ function renderWeeklyChart(){
     '<div class="stat-caption">'+AVG_SOURCE_LABEL+'</div>';
 }
 
+// 先週とくらべて、減らせたかどうかを一行で。
+function renderWeekCompare(){
+  const c = weekComparison();
+  if (!c) return '<div class="week-compare flat">'+t('week.compareNone')+'</div>';
+  const diff = Math.round(Math.abs(c.diff));
+  if (diff < 5) return '<div class="week-compare flat">'+t('week.compareSame')+'</div>';
+  const better = c.diff > 0;
+  return '<div class="week-compare '+(better ? 'good' : 'bad')+'">' +
+    (better ? '🎉 ' : '💡 ') +
+    t(better ? 'week.compareDown' : 'week.compareUp', { g: formatGrams(diff) }) +
+    '<span>'+t('week.compareDetail', { now: formatGrams(Math.round(c.now)), prev: formatGrams(Math.round(c.prev)) })+'</span>' +
+  '</div>';
+}
+
+// これまでの資源が現実の何にあたるか。
+function renderEquivalents(){
+  const list = ecoEquivalents();
+  if (!list.length) return '';
+  let rows = '';
+  list.forEach(function(e){
+    rows += '<div class="equiv-row"><span class="equiv-icon">'+e.icon+'</span>' +
+      '<b>'+t('equiv.'+e.id, { n: e.n })+'</b></div>';
+  });
+  return '<div class="equiv-box"><div class="equiv-title">'+t('equiv.title')+'</div>'+rows+'</div>';
+}
+
+// ごみを出さなかった行動のチェックリスト。ここだけはごみを増やさずに
+// リサイクルpが増えるので、「減らすほど良く育つ」になる。
+function renderEcoActions(){
+  const streak = ecoStreak();
+  let rows = '';
+  ECO_ACTIONS.forEach(function(a){
+    const on = ecoIsDone(a.id);
+    rows += '<button class="eco-item'+(on ? ' on' : '')+'" data-eco="'+a.id+'">' +
+      '<span class="eco-check">'+(on ? '☑' : '☐')+'</span>' +
+      '<span class="eco-icon">'+a.icon+'</span>' +
+      '<span class="eco-label">'+t('eco.'+a.id)+'</span>' +
+      '<span class="eco-p">♻️+'+a.p+'</span>' +
+    '</button>';
+  });
+  return '' +
+    '<div class="eco-box">' +
+      '<div class="eco-head">' +
+        '<b>'+t('eco.title')+'</b>' +
+        (streak ? '<span class="eco-streak">🔥 '+t('eco.streak', { n: streak })+'</span>' : '') +
+      '</div>' +
+      '<div class="eco-sub">'+t('eco.sub')+'</div>' +
+      rows +
+    '</div>';
+}
+
+function renderWeeklyLogBody(){
+  return renderWeeklyChart() +
+    renderWeekCompare() +
+    '<div class="week-note">'+t('week.note')+'</div>' +
+    renderEcoActions() +
+    renderEquivalents();
+}
+
+function attachEcoHandlers(){
+  document.querySelectorAll('[data-eco]').forEach(function(btn){
+    btn.addEventListener('click', function(){ onEcoToggle(btn.getAttribute('data-eco')); });
+  });
+}
+
 function openWeeklyLog(){
   document.getElementById('feedModalRoot').innerHTML =
     '<div class="feed-modal-overlay" id="weeklyLogOverlay">' +
       '<div class="feed-modal-card" style="border-radius:24px; max-width:400px; margin:auto;">' +
         '<div class="feed-modal-header"><b>'+t('week.title')+'</b><button class="feed-modal-close" id="weeklyLogClose">✕</button></div>' +
-        renderWeeklyChart() +
-        '<div class="week-note">'+t('week.note')+'</div>' +
+        '<div id="weeklyLogBody">'+renderWeeklyLogBody()+'</div>' +
       '</div>' +
     '</div>';
   document.getElementById('weeklyLogClose').addEventListener('click', closeFeedModal);
   document.getElementById('weeklyLogOverlay').addEventListener('click', function(e){
     if (e.target.id === 'weeklyLogOverlay') closeFeedModal();
   });
+  attachEcoHandlers();
+}
+
+function refreshWeeklyLogBody(){
+  const body = document.getElementById('weeklyLogBody');
+  if (!body) return;
+  body.innerHTML = renderWeeklyLogBody();
+  attachEcoHandlers();
 }
 
 function renderGraph(){
