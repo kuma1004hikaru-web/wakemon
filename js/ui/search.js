@@ -7,11 +7,32 @@
 let SEARCH_QUERY = '';
 let SEARCH_CAT = null;   // カテゴリ一覧モードのとき id が入る
 
-function searchResultCard(item){
+// Feeding straight from the dictionary counts as a correct sort — the
+// player looked the answer up, which is exactly the behaviour we want.
+// Grams, dirtiness and recycling points come from the same rules as the
+// normal feed, so the numbers never disagree.
+function searchResultCard(item, idx){
   const meta = dictCatMeta(item.cat);
   const label = item.cat === 'special' ? t('search.special') : tCat(meta, 'label');
   const title = LANG === 'hira' ? item.kana : item.name;
   const sub = LANG === 'hira' ? '' : item.kana;
+
+  let action;
+  if (!dictCanFeed(item)){
+    action = '<div class="dict-nofeed">'+t('search.noFeed')+'</div>';
+  } else if (!canFeedNow()){
+    action = '<div class="dict-nofeed">'+t('search.feedClosed')+'</div>';
+  } else {
+    const cat = catById(item.cat);
+    action = '<div class="dict-action">' +
+      '<span class="dict-gram">'+item.g+'g' +
+        (cat.ecoRate ? ' ・ ♻️+'+Math.round(item.g * cat.ecoRate) : '') +
+        ' ・ 😷+'+cat.pollutionPerItem +
+      '</span>' +
+      '<button class="dict-feed" data-feed="'+idx+'">'+t('search.feed')+'</button>' +
+    '</div>';
+  }
+
   return '' +
     '<div class="dict-card" style="--dict-color:'+meta.color+';">' +
       '<div class="dict-head">' +
@@ -20,18 +41,27 @@ function searchResultCard(item){
         '<span class="dict-cat">'+label+'</span>' +
       '</div>' +
       '<div class="dict-tip">'+item.tip+'</div>' +
+      action +
     '</div>';
 }
+
+// Feeding is only possible during a running cycle.
+function canFeedNow(){
+  return !!STATE && STATE.eggChosen && !STATE.isBadLocked && STATE.day <= CYCLE_DAYS;
+}
+
+let SEARCH_SHOWN = [];   // what is on screen now, so data-feed indexes match
 
 function renderSearchResults(){
   let list;
   if (SEARCH_CAT) list = dictByCategory(SEARCH_CAT);
   else if (SEARCH_QUERY) list = dictSearch(SEARCH_QUERY);
-  else return '<div class="dict-empty">'+t('search.empty')+'</div>';
+  else { SEARCH_SHOWN = []; return '<div class="dict-empty">'+t('search.empty')+'</div>'; }
 
+  SEARCH_SHOWN = list;
   if (!list.length) return '<div class="dict-empty">'+t('search.noHit')+'</div>';
   return '<div class="dict-count">'+t('search.count', { n: list.length })+'</div>' +
-    list.map(searchResultCard).join('');
+    list.map(function(item, i){ return searchResultCard(item, i); }).join('');
 }
 
 function renderSearchChips(){
@@ -65,7 +95,7 @@ function renderSearchView(){
 
 function refreshSearchResults(){
   const box = document.getElementById('dictResults');
-  if (box) box.innerHTML = renderSearchResults();
+  if (box){ box.innerHTML = renderSearchResults(); attachFeedButtons(); }
   // chips reflect the current selection
   document.querySelectorAll('.dict-chip').forEach(function(btn){
     btn.classList.toggle('on', btn.getAttribute('data-cat') === SEARCH_CAT);
@@ -74,8 +104,18 @@ function refreshSearchResults(){
   if (!clear && (SEARCH_QUERY || SEARCH_CAT)) openSearch(true);   // need the ✕ button
 }
 
+function attachFeedButtons(){
+  document.querySelectorAll('.dict-feed').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      const item = SEARCH_SHOWN[parseInt(btn.getAttribute('data-feed'), 10)];
+      if (item) onFeedFromDict(item, btn);
+    });
+  });
+}
+
 function attachSearchHandlers(){
   document.getElementById('searchBackBtn').addEventListener('click', closeSearch);
+  attachFeedButtons();
 
   const input = document.getElementById('searchInput');
   input.addEventListener('input', function(){

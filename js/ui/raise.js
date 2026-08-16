@@ -470,10 +470,7 @@ function renderRaiseView(){
         renderMiniHud() +
         (warnBadge ? '<div class="hud-warn-badge">'+warnBadge+'</div>' : '') +
       '</div>' +
-      '<div class="scene-topright">' +
-        '<button class="scene-settings-btn" id="sceneSearchBtn" title="'+t('search.title')+'">🔍</button>' +
-        '<button class="scene-settings-btn" id="sceneSettingsBtn">⚙️</button>' +
-      '</div>' +
+      '<button class="scene-settings-btn" id="sceneSettingsBtn">⚙️</button>' +
     '</div>' +
     '<div class="scene-monster-area">' +
       '<div class="scene-monster-zone" id="sceneMonsterZone" style="width:'+sceneSizePx+'px; height:'+sceneSizePx+'px;">' + svg + '</div>' +
@@ -492,6 +489,9 @@ function renderRaiseView(){
       '<button class="action-item" id="logBigBtn">' +
         '<img class="action-icon" src="assets/ui/icon-log.png" alt="" />' +
         '<span>'+t('scene.log')+'</span></button>' +
+      '<button class="action-item" id="searchBigBtn">' +
+        '<img class="action-icon" src="assets/ui/icon-search.png" alt="" />' +
+        '<span>'+t('scene.search')+'</span></button>' +
     '</div>' +
   '</div>';
 
@@ -505,7 +505,7 @@ function attachRaiseHandlers(){
   document.getElementById('logBigBtn').addEventListener('click', openWeeklyLog);
   document.getElementById('miniHud').addEventListener('click', openStatsDetail);
   document.getElementById('sceneSettingsBtn').addEventListener('click', openSettings);
-  document.getElementById('sceneSearchBtn').addEventListener('click', function(){ openSearch(false); });
+  document.getElementById('searchBigBtn').addEventListener('click', function(){ openSearch(false); });
 }
 
 /* ------------------------------------------------------------

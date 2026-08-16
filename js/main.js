@@ -21,6 +21,36 @@ function chooseEgg(groupIdx){
   renderTitleMonster();
 }
 
+// Feed straight from the dictionary. The player already looked the answer
+// up, so it counts as a correct sort and runs through exactly the same
+// rules as the quiz — same grams, dirtiness and recycling points.
+async function onFeedFromDict(dictItem, btn){
+  if (!canFeedNow() || !dictCanFeed(dictItem)) return;
+  const item = dictToTrash(dictItem);
+  const wasBad = STATE.isBadLocked;
+
+  applySortedFeed(STATE, item, item.categoryId);
+  LIFETIME[item.categoryId] = (LIFETIME[item.categoryId] || 0) + item.grams;
+  recordDailyTrash(item.grams);
+  ensureDayDate(STATE);
+
+  scheduleSaveGameData();
+  renderRaiseView();
+  renderLifetimeBanner();
+
+  // show the result on the card itself rather than closing the dictionary
+  if (btn){
+    const row = btn.parentElement;
+    row.innerHTML = '<span class="dict-fed">'+t('search.fed', { g: item.grams })+'</span>';
+  }
+
+  if (!wasBad && STATE.isBadLocked){
+    closeSearch();
+    flushPendingSave();
+    await failCycle();
+  }
+}
+
 async function onSortAnswer(itemId, categoryId){
   if (STATE.day > CYCLE_DAYS) return;
   const item = trashById(itemId);
