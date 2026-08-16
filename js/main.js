@@ -31,7 +31,7 @@ function onEcoToggle(id){
     scheduleSaveGameData();
     renderRaiseView();
   }
-  refreshWeeklyLogBody();
+  refreshEcoBody();
 }
 
 // Feed straight from the dictionary. The player already looked the answer

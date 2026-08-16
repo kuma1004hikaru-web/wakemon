@@ -21,6 +21,7 @@ const UI_TEXT = {
   /* ---------------------------------------------- 日本語 */
   ja: {
     'brand.tagline':'分別して育てる、SDGsモンスター図鑑',
+    'scene.eco':'エコかつどう',
     'scene.search':'しらべる',
     'week.compareNone':'来週になると、先週とくらべられるよ',
     'week.compareSame':'先週とだいたい同じくらいだね',
@@ -140,6 +141,7 @@ const UI_TEXT = {
   /* ---------------------------------------------- ひらがな */
   hira: {
     'brand.tagline':'わけて そだてる、SDGs モンスターずかん',
+    'scene.eco':'エコかつどう',
     'scene.search':'しらべる',
     'week.compareNone':'らいしゅうに なると、せんしゅうと くらべられるよ',
     'week.compareSame':'せんしゅうと だいたい おなじくらいだね',
@@ -259,6 +261,7 @@ const UI_TEXT = {
   /* ---------------------------------------------- English */
   en: {
     'brand.tagline':'Sort your trash, raise SDGs monsters',
+    'scene.eco':'Eco',
     'scene.search':'Look up',
     'week.compareNone':'Next week you will be able to compare with this one',
     'week.compareSame':'About the same as last week',
@@ -378,6 +381,7 @@ const UI_TEXT = {
   /* ---------------------------------------------- 中文（简体） */
   zh: {
     'brand.tagline':'分类垃圾，养成SDGs怪兽图鉴',
+    'scene.eco':'环保行动',
     'scene.search':'查一查',
     'week.compareNone':'到下周就能和这周比较了',
     'week.compareSame':'和上周差不多呢',
@@ -497,6 +501,7 @@ const UI_TEXT = {
   /* ---------------------------------------------- 한국어 */
   ko: {
     'brand.tagline':'분리배출하며 키우는 SDGs 몬스터 도감',
+    'scene.eco':'에코',
     'scene.search':'찾아보기',
     'week.compareNone':'다음 주가 되면 이번 주와 비교할 수 있어요',
     'week.compareSame':'지난주와 비슷해요',

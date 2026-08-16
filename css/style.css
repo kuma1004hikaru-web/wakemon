@@ -210,7 +210,7 @@
      three hand-drawn icons with their labels underneath. */
   .scene-actions{
     position:relative; z-index:2; flex:0 0 auto;
-    display:flex; gap:4px; justify-content:space-around; align-items:flex-end;
+    display:flex; gap:2px; justify-content:space-around; align-items:flex-end;
     background:rgba(150,175,235,0.55);
     border-top:2px solid rgba(120,145,205,0.5);
     padding:8px 8px calc(8px + env(safe-area-inset-bottom));
@@ -220,13 +220,13 @@
     display:flex; flex-direction:column; align-items:center; gap:3px;
     background:none; border:none; padding:2px 0; cursor:pointer;
     font-family:'Zen Maru Gothic',sans-serif; font-weight:700;
-    font-size:clamp(9.5px, 2.9vw, 12px); line-height:1.2; color:var(--ink);
+    font-size:clamp(8px, 2.4vw, 10.5px); line-height:1.2; color:var(--ink);
     transition:transform .12s ease;
   }
   .action-item:active{ transform:scale(0.92); }
-  /* four items now, so the icons are a touch smaller */
+  /* five items now, so the icons are smaller again */
   .action-icon{
-    width:auto; height:min(48px, 7vh); max-width:100%; object-fit:contain; display:block;
+    width:auto; height:min(42px, 6vh); max-width:100%; object-fit:contain; display:block;
     filter:drop-shadow(0 2px 3px rgba(0,0,0,0.18));
   }
   .action-item span{ white-space:nowrap; }
@@ -447,7 +447,9 @@
     margin-top:14px; padding:12px; border-radius:16px;
     background:#F2FAF3; border:2px solid #CDE8D2;
   }
-  .eco-head{ display:flex; align-items:center; justify-content:space-between; gap:8px; }
+  /* on its own screen it needs no card of its own */
+  .eco-box.standalone{ margin-top:4px; padding:0; background:none; border:none; }
+  .eco-head{ display:flex; align-items:center; justify-content:flex-end; gap:8px; }
   .eco-head b{
     font-family:'Zen Maru Gothic',sans-serif; font-weight:900; font-size:13.5px; color:var(--pine-dark);
   }

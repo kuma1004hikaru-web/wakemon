@@ -294,22 +294,41 @@ function renderEcoActions(){
     '</button>';
   });
   return '' +
-    '<div class="eco-box">' +
-      '<div class="eco-head">' +
-        '<b>'+t('eco.title')+'</b>' +
-        (streak ? '<span class="eco-streak">🔥 '+t('eco.streak', { n: streak })+'</span>' : '') +
-      '</div>' +
+    '<div class="eco-box standalone">' +
+      (streak ? '<div class="eco-head"><span class="eco-streak">🔥 '+t('eco.streak', { n: streak })+'</span></div>' : '') +
       '<div class="eco-sub">'+t('eco.sub')+'</div>' +
       rows +
     '</div>';
 }
 
+// きろくはグラフと数字だけ。エコアクションは自分のボタンに独立させた。
 function renderWeeklyLogBody(){
   return renderWeeklyChart() +
     renderWeekCompare() +
     '<div class="week-note">'+t('week.note')+'</div>' +
-    renderEcoActions() +
     renderEquivalents();
+}
+
+function openEcoActions(){
+  document.getElementById('feedModalRoot').innerHTML =
+    '<div class="feed-modal-overlay" id="ecoOverlay">' +
+      '<div class="feed-modal-card" style="border-radius:24px; max-width:400px; margin:auto;">' +
+        '<div class="feed-modal-header"><b>'+t('eco.title')+'</b><button class="feed-modal-close" id="ecoClose">✕</button></div>' +
+        '<div id="ecoBody">'+renderEcoActions()+'</div>' +
+      '</div>' +
+    '</div>';
+  document.getElementById('ecoClose').addEventListener('click', closeFeedModal);
+  document.getElementById('ecoOverlay').addEventListener('click', function(e){
+    if (e.target.id === 'ecoOverlay') closeFeedModal();
+  });
+  attachEcoHandlers();
+}
+
+function refreshEcoBody(){
+  const body = document.getElementById('ecoBody');
+  if (!body) return;
+  body.innerHTML = renderEcoActions();
+  attachEcoHandlers();
 }
 
 function attachEcoHandlers(){
@@ -555,6 +574,9 @@ function renderRaiseView(){
       '<button class="action-item" id="feedBigBtn">' +
         '<img class="action-icon" src="assets/ui/icon-feed.png" alt="" />' +
         '<span>'+t('scene.feed')+'</span></button>' +
+      '<button class="action-item" id="ecoBigBtn">' +
+        '<img class="action-icon" src="assets/ui/icon-eco.png" alt="" />' +
+        '<span>'+t('scene.eco')+'</span></button>' +
       '<button class="action-item" id="dexBigBtn">' +
         '<img class="action-icon" src="assets/ui/icon-dex.png" alt="" />' +
         '<span>'+t('scene.dex')+'</span></button>' +
@@ -578,6 +600,7 @@ function attachRaiseHandlers(){
   document.getElementById('miniHud').addEventListener('click', openStatsDetail);
   document.getElementById('sceneSettingsBtn').addEventListener('click', openSettings);
   document.getElementById('searchBigBtn').addEventListener('click', function(){ openSearch(false); });
+  document.getElementById('ecoBigBtn').addEventListener('click', openEcoActions);
 }
 
 /* ------------------------------------------------------------
