@@ -21,6 +21,13 @@ const UI_TEXT = {
   /* ---------------------------------------------- 日本語 */
   ja: {
     'brand.tagline':'分別して育てる、SDGsモンスター図鑑',
+    'search.title':'🔍 ごみのじてん',
+    'search.placeholder':'ごみの名前を入れてね',
+    'search.empty':'調べたいごみの名前を入れるか、下のボタンからえらんでね。',
+    'search.noHit':'見つからなかった…。ちがう言い方でためすか、おうちの人や市のホームページで調べてみよう。',
+    'search.count':'{n}件 見つかったよ',
+    'search.special':'そのほか（回収へ）',
+    'search.note':'※分別のルールは市区町村でちがうことがあります。町のルールもたしかめてね。',
     'title.tap':'-tap to start-',
     'common.close':'とじる',
     'common.cancel':'キャンセル',
@@ -110,6 +117,13 @@ const UI_TEXT = {
   /* ---------------------------------------------- ひらがな */
   hira: {
     'brand.tagline':'わけて そだてる、SDGs モンスターずかん',
+    'search.title':'🔍 ごみの じてん',
+    'search.placeholder':'ごみの なまえを いれてね',
+    'search.empty':'しらべたい ごみの なまえを いれるか、したの ボタンから えらんでね。',
+    'search.noHit':'みつからなかった…。ちがう いいかたで ためすか、おうちの ひとに きいてみよう。',
+    'search.count':'{n}こ みつかったよ',
+    'search.special':'そのほか（かいしゅうへ）',
+    'search.note':'※わけかたの ルールは まちごとに ちがうことが あります。まちの ルールも たしかめてね。',
     'title.tap':'-tap to start-',
     'common.close':'とじる',
     'common.cancel':'やめる',
@@ -199,6 +213,13 @@ const UI_TEXT = {
   /* ---------------------------------------------- English */
   en: {
     'brand.tagline':'Sort your trash, raise SDGs monsters',
+    'search.title':'🔍 Trash dictionary',
+    'search.placeholder':'Type the name of the trash',
+    'search.empty':'Type what you want to look up, or pick a category below.',
+    'search.noHit':'Nothing found. Try another word, or check your town’s website.',
+    'search.count':'{n} found',
+    'search.special':'Other (special collection)',
+    'search.note':'Note: sorting rules differ between towns. Check your local rules too.',
     'title.tap':'-tap to start-',
     'common.close':'Close',
     'common.cancel':'Cancel',
@@ -288,6 +309,13 @@ const UI_TEXT = {
   /* ---------------------------------------------- 中文（简体） */
   zh: {
     'brand.tagline':'分类垃圾，养成SDGs怪兽图鉴',
+    'search.title':'🔍 垃圾词典',
+    'search.placeholder':'输入垃圾的名字',
+    'search.empty':'输入想查的垃圾名字，或从下面的分类里选。',
+    'search.noHit':'没有找到。换个说法试试，或查看你所在城市的网站。',
+    'search.count':'找到 {n} 条',
+    'search.special':'其他（专门回收）',
+    'search.note':'※分类规则因城市而异，也请确认你所在城市的规则。',
     'title.tap':'-tap to start-',
     'common.close':'关闭',
     'common.cancel':'取消',
@@ -377,6 +405,13 @@ const UI_TEXT = {
   /* ---------------------------------------------- 한국어 */
   ko: {
     'brand.tagline':'분리배출하며 키우는 SDGs 몬스터 도감',
+    'search.title':'🔍 쓰레기 사전',
+    'search.placeholder':'쓰레기 이름을 입력하세요',
+    'search.empty':'찾고 싶은 쓰레기 이름을 넣거나, 아래 분류에서 골라보세요.',
+    'search.noHit':'찾지 못했어요. 다른 말로 해보거나, 사는 지역의 홈페이지를 확인해보세요.',
+    'search.count':'{n}개 찾았어요',
+    'search.special':'그 밖(전용 수거)',
+    'search.note':'※분리 규칙은 지자체마다 달라요. 사는 곳의 규칙도 확인해주세요.',
     'title.tap':'-tap to start-',
     'common.close':'닫기',
     'common.cancel':'취소',

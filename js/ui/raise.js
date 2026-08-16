@@ -470,7 +470,10 @@ function renderRaiseView(){
         renderMiniHud() +
         (warnBadge ? '<div class="hud-warn-badge">'+warnBadge+'</div>' : '') +
       '</div>' +
-      '<button class="scene-settings-btn" id="sceneSettingsBtn">⚙️</button>' +
+      '<div class="scene-topright">' +
+        '<button class="scene-settings-btn" id="sceneSearchBtn" title="'+t('search.title')+'">🔍</button>' +
+        '<button class="scene-settings-btn" id="sceneSettingsBtn">⚙️</button>' +
+      '</div>' +
     '</div>' +
     '<div class="scene-monster-area">' +
       '<div class="scene-monster-zone" id="sceneMonsterZone" style="width:'+sceneSizePx+'px; height:'+sceneSizePx+'px;">' + svg + '</div>' +
@@ -502,6 +505,7 @@ function attachRaiseHandlers(){
   document.getElementById('logBigBtn').addEventListener('click', openWeeklyLog);
   document.getElementById('miniHud').addEventListener('click', openStatsDetail);
   document.getElementById('sceneSettingsBtn').addEventListener('click', openSettings);
+  document.getElementById('sceneSearchBtn').addEventListener('click', function(){ openSearch(false); });
 }
 
 /* ------------------------------------------------------------
