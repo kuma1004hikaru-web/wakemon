@@ -480,9 +480,15 @@ function renderRaiseView(){
       '</div>' +
     '</div>' +
     '<div class="scene-actions">' +
-      '<button class="big-action-btn" id="feedBigBtn"><span class="baticon">🍱</span>'+t('scene.feed')+'</button>' +
-      '<button class="big-action-btn" id="dexBigBtn"><span class="baticon">📖</span>'+t('scene.dex')+'</button>' +
-      '<button class="big-action-btn" id="logBigBtn"><span class="baticon">📊</span>'+t('scene.log')+'</button>' +
+      '<button class="action-item" id="feedBigBtn">' +
+        '<img class="action-icon" src="assets/ui/icon-feed.png" alt="" />' +
+        '<span>'+t('scene.feed')+'</span></button>' +
+      '<button class="action-item" id="dexBigBtn">' +
+        '<img class="action-icon" src="assets/ui/icon-dex.png" alt="" />' +
+        '<span>'+t('scene.dex')+'</span></button>' +
+      '<button class="action-item" id="logBigBtn">' +
+        '<img class="action-icon" src="assets/ui/icon-log.png" alt="" />' +
+        '<span>'+t('scene.log')+'</span></button>' +
     '</div>' +
   '</div>';
 

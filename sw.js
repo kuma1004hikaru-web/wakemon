@@ -1,4 +1,4 @@
-const CACHE_NAME = 'wakemon-cache-v48';
+const CACHE_NAME = 'wakemon-cache-v49';
 const APP_SHELL = [
   './',
   './index.html',
@@ -15,6 +15,9 @@ const APP_SHELL = [
   './js/ui/raise.js',
   './js/ui/dex.js',
   './js/main.js',
+  './assets/ui/icon-feed.png',
+  './assets/ui/icon-dex.png',
+  './assets/ui/icon-log.png',
   './assets/art/slot-1.png',
   './assets/art/slot-2.png',
   './assets/art/slot-3.png',
