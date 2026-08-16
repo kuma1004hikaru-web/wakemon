@@ -39,7 +39,32 @@ function freshState(prevGroupIdx){
     eggChosen: false,
     pathIndex: null,
     finalIndex: null,
+    // Real calendar date this game-day started on. One real day = one game
+    // day, so the cycle only moves forward when the date actually changes.
+    dayDate: null,
   };
+}
+
+/* ============================================================
+   実際の日付で1日を数える
+   ============================================================
+   dayDate holds the real date the current game-day began. It is filled
+   in lazily on first feed/open so a monster picked at 23:59 does not
+   burn its whole day. DEV_MODE (?dev=1) bypasses the wait for testing. */
+let DEV_MODE = false;
+
+function todayKey(){ return dateKeyOf(new Date()); }
+
+function ensureDayDate(state){
+  if (!state.dayDate){ state.dayDate = todayKey(); return true; }
+  return false;
+}
+
+// True when the real date has moved past the day this game-day started.
+function canAdvanceDay(state){
+  if (DEV_MODE) return true;
+  if (!state.dayDate) return false;       // today's game-day just began
+  return state.dayDate !== todayKey();
 }
 
 // Ratio of "good" (recycle/paper/compost) grams within a breakdown object,

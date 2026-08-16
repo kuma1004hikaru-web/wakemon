@@ -29,6 +29,7 @@ async function onSortAnswer(itemId, categoryId){
   const correct = applySortedFeed(STATE, item, categoryId);
   LIFETIME[item.categoryId] = (LIFETIME[item.categoryId] || 0) + item.grams;
   recordDailyTrash(item.grams);
+  ensureDayDate(STATE);   // the game-day starts counting from the first feed
 
   // back to the pick screen with fresh choices + feedback banner
   FEED_SELECTED = null;
@@ -91,11 +92,16 @@ async function failCycle(){
 }
 
 async function onNextDay(){
+  // One real day = one game day. Until the calendar date changes the
+  // button is disabled, so this is just a safety net.
+  if (!canAdvanceDay(STATE)) return;
+
   if (STATE.day < CYCLE_DAYS){
     const stageBefore = stageForDay(STATE.day);
     const enteringDay2 = STATE.day === 1;
     STATE.day += 1;
     STATE.todayGrams = 0;
+    STATE.dayDate = todayKey();
     if (enteringDay2 && STATE.pathIndex === null){
       resolvePathBranch(STATE);
     }
@@ -279,6 +285,9 @@ function normalizeState(s){
   // Saves made before the egg picker existed have no flag — treat those runs
   // as already started so they aren't interrupted by the picker.
   if (!(s && typeof s.eggChosen === 'boolean')) merged.eggChosen = true;
+  // Saves from before real-day pacing have no dayDate. Treat their current
+  // day as having started yesterday so the player is not made to wait.
+  if (!(s && typeof s.dayDate === 'string')) merged.dayDate = null;
   if (typeof merged.pathIndex !== 'number' || merged.pathIndex < 0 || merged.pathIndex > 2) merged.pathIndex = (merged.pathIndex === null ? null : fresh.pathIndex);
   if (typeof merged.finalIndex !== 'number' || merged.finalIndex < 0 || merged.finalIndex > 1) merged.finalIndex = (merged.finalIndex === null ? null : fresh.finalIndex);
   return merged;
@@ -323,6 +332,12 @@ function initTitleScreen(){
 }
 
 async function init(){
+  // ?dev=1 unlocks the next-day button so a whole 4-day cycle can be
+  // tested in one sitting. The public URL stays on real-day pacing.
+  try{
+    DEV_MODE = new URLSearchParams(location.search).get('dev') === '1';
+  }catch(e){ DEV_MODE = false; }
+
   const savedLang = loadLang();
   if (savedLang) setLang(savedLang);
   PENDING_LANG_CHOICE = !savedLang;

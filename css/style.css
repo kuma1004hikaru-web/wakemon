@@ -269,6 +269,16 @@
   }
   .egg-card span{ font-size:clamp(8px, 2.4vw, 9.5px); color:var(--ink-soft); line-height:1.4; white-space:nowrap; }
 
+  /* the next-day button while waiting for the real date to change */
+  .primary-btn.waiting{
+    background:#DDE3D6; color:var(--ink-soft); box-shadow:none; cursor:default;
+  }
+  .primary-btn.waiting:active{ transform:none; }
+  .wait-note{
+    margin-top:7px; font-size:11px; line-height:1.6; text-align:center;
+    color:var(--ink-soft);
+  }
+
   /* ---- language picker ---- */
   .lang-overlay{ z-index:90; }
   .lang-grid{

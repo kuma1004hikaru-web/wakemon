@@ -370,7 +370,19 @@ function renderFeedModalBody(){
     '<button class="shuffle-btn" id="shuffleTrashBtn">'+t('feed.shuffle')+'</button>' +
     '<div style="height:12px;"></div>' +
     renderGraph() +
-    '<button class="primary-btn" id="nextDayBtn">'+(isLastDay ? t('feed.finish') : t('feed.nextDay'))+'</button>';
+    renderNextDayButton(isLastDay);
+}
+
+// One real day = one game day: the button only unlocks once the calendar
+// date has moved on (or always, in ?dev=1 test mode).
+function renderNextDayButton(isLastDay){
+  const ready = canAdvanceDay(STATE);
+  const label = ready
+    ? (isLastDay ? t('feed.finish') : t('feed.nextDay')) + (DEV_MODE ? ' ⏩' : '')
+    : t('feed.waitTomorrow');
+  return '<button class="primary-btn'+(ready ? '' : ' waiting')+'" id="nextDayBtn"'+(ready ? '' : ' disabled')+'>' +
+    label + '</button>' +
+    (ready ? '' : '<div class="wait-note">'+t('feed.waitNote')+'</div>');
 }
 
 function renderFeedModalShell(){
@@ -407,7 +419,7 @@ function attachFeedModalBodyHandlers(){
     refreshFeedModalBody();
   });
   const nextBtn = document.getElementById('nextDayBtn');
-  if (nextBtn) nextBtn.addEventListener('click', onNextDay);
+  if (nextBtn && !nextBtn.disabled) nextBtn.addEventListener('click', onNextDay);
 }
 
 function openFeedModal(){
