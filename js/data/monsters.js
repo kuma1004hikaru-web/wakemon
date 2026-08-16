@@ -67,6 +67,7 @@ const CUSTOM_ART = {
   30: 'assets/art/slot-30.png',
   31: 'assets/art/slot-31.png',
   32: 'assets/art/slot-32.png',
+  33: 'assets/art/slot-33.png',
 };
 
 // Name + blurb per slot. The dex, the completion modal and the scene caption
@@ -109,7 +110,7 @@ const MONSTER_INFO = {
   // ---- ハズレ ----
   31: { name:'カレボック',     desc:'ごみだらけの森で育ってしまい、かれてしまった木。次は ごみを減らしてみよう。' },
   32: { name:'ヘドロン',       desc:'よごれた水にしずんで どろどろになってしまった。正しく分別すれば 出会わずにすむ。' },
-  33: { name:'モクモク',       desc:'もやしすぎて 空をよごすけむりのかたまり。もえるごみを減らすのが たいせつ。' },
+  33: { name:'モクモク',       desc:'分別されなかったごみを のみこんで ふくらんだ けむりのかたまり。かさも かんも ボトルも、正しく分ければ 資源になったのに…。' },
 };
 
 function monsterName(slot){

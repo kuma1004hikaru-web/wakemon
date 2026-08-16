@@ -71,7 +71,7 @@ const CONTENT_I18N = {
       30:{ desc:'せなかに ほのおを まとった イノシシ。もやすごみが おおいと あらわれる。' },
       31:{ desc:'ごみだらけの もりで そだってしまい、かれてしまった き。' },
       32:{ desc:'よごれた みずに しずんで どろどろに なってしまった。' },
-      33:{ desc:'もやしすぎて そらを よごす けむりの かたまり。' },
+      33:{ desc:'わけられなかった ごみを のみこんで ふくらんだ けむりの かたまり。かさも かんも ボトルも、ただしく わければ しげんに なったのに…。' },
     },
   },
 
@@ -140,7 +140,7 @@ const CONTENT_I18N = {
       30:{ name:'Blazeboar', desc:'A boar with flames along its back. It appears when there is a lot of burnable trash.' },
       31:{ name:'Witherwood', desc:'A tree that withered after growing in a forest full of trash. Try making less trash next time.' },
       32:{ name:'Sludgen', desc:'It sank into dirty water and turned to sludge. Sort correctly and you will never meet it.' },
-      33:{ name:'Smogblob', desc:'A lump of smoke from burning too much, dirtying the sky. Cutting burnable trash matters.' },
+      33:{ name:'Smogblob', desc:'A lump of smoke swollen with trash that was never sorted. The umbrella, the can, the bottle — all of it could have been a resource.' },
     },
   },
 
@@ -209,7 +209,7 @@ const CONTENT_I18N = {
       30:{ name:'炎背猪', desc:'背上带着火焰的野猪。可燃垃圾多的时候就会出现。' },
       31:{ name:'枯木怪', desc:'在满是垃圾的森林里长大，最后枯萎的树。下次试着少扔一点垃圾吧。' },
       32:{ name:'淤泥怪', desc:'沉进脏水里变得黏糊糊的样子。好好分类就不会遇到它。' },
-      33:{ name:'烟团', desc:'烧太多而弄脏天空的烟团。减少可燃垃圾很重要。' },
+      33:{ name:'烟团', desc:'吞下没有分类的垃圾而胀大的烟团。雨伞、罐子、瓶子，本来都能变成资源的…' },
     },
   },
 
@@ -278,7 +278,7 @@ const CONTENT_I18N = {
       30:{ name:'불등 멧돼지', desc:'등에 불꽃을 두른 멧돼지. 타는 쓰레기가 많으면 나타나요.' },
       31:{ name:'마른나무', desc:'쓰레기투성이 숲에서 자라 말라버린 나무. 다음에는 쓰레기를 줄여봐요.' },
       32:{ name:'헤드론', desc:'더러운 물에 가라앉아 흐물흐물해졌어요. 바르게 분리하면 만나지 않아요.' },
-      33:{ name:'뭉게연기', desc:'너무 태워서 하늘을 더럽히는 연기 덩어리. 타는 쓰레기를 줄이는 게 중요해요.' },
+      33:{ name:'뭉게연기', desc:'분리하지 않은 쓰레기를 삼켜 부풀어 오른 연기 덩어리. 우산도 캔도 병도, 제대로 분리했다면 자원이 되었을 텐데…' },
     },
   },
 };
