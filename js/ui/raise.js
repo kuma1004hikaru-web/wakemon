@@ -208,9 +208,11 @@ function openEggPicker(){
   });
 }
 
-// Only interrupt when a fresh monster is still waiting on a choice.
+// Only interrupt when a fresh monster is still waiting on a choice;
+// otherwise see whether the calendar rolled the day forward while away.
 function maybeShowEggPicker(){
-  if (STATE && !STATE.eggChosen) openEggPicker();
+  if (STATE && !STATE.eggChosen){ openEggPicker(); return; }
+  setTimeout(maybeAutoAdvanceDay, 200);
 }
 
 /* ============================================================

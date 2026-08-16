@@ -61,10 +61,17 @@ function ensureDayDate(state){
 }
 
 // True when the real date has moved past the day this game-day started.
+// Ignores DEV_MODE — this is the honest calendar check used to decide
+// whether to roll the day forward automatically.
+function realDateChanged(state){
+  return !!state.dayDate && state.dayDate !== todayKey();
+}
+
+// Whether the "next day" button may be pressed. Dev mode unlocks it so a
+// whole cycle can be tested without waiting for real days to pass.
 function canAdvanceDay(state){
   if (DEV_MODE) return true;
-  if (!state.dayDate) return false;       // today's game-day just began
-  return state.dayDate !== todayKey();
+  return realDateChanged(state);
 }
 
 // Ratio of "good" (recycle/paper/compost) grams within a breakdown object,

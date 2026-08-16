@@ -91,6 +91,15 @@ async function failCycle(){
   });
 }
 
+// Opening the app on a new calendar date rolls the day forward on its own,
+// so nobody has to remember to press a button. One open = at most one day,
+// so being away a week just resumes rather than skipping the whole cycle.
+async function maybeAutoAdvanceDay(){
+  if (!STATE || !STATE.eggChosen) return;
+  if (!realDateChanged(STATE)) return;
+  await onNextDay();
+}
+
 async function onNextDay(){
   // One real day = one game day. Until the calendar date changes the
   // button is disabled, so this is just a safety net.
