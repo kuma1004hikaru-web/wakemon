@@ -125,18 +125,48 @@ function renderDexView(){
 
   document.getElementById('dexView').innerHTML = html;
   document.getElementById('dexBackBtn').addEventListener('click', function(){ setTab('raise'); });
-  document.getElementById('dexPrevBtn').addEventListener('click', function(){
-    DEX_PAGE = (DEX_PAGE + EGG_GROUPS.length - 1) % EGG_GROUPS.length;
-    renderDexView();
-  });
-  document.getElementById('dexNextBtn').addEventListener('click', function(){
-    DEX_PAGE = (DEX_PAGE + 1) % EGG_GROUPS.length;
-    renderDexView();
-  });
+  document.getElementById('dexPrevBtn').addEventListener('click', function(){ turnDexPage(-1); });
+  document.getElementById('dexNextBtn').addEventListener('click', function(){ turnDexPage(1); });
 
   document.querySelectorAll('.dex-node[data-key]').forEach(function(el){
     el.addEventListener('click', function(){ showDexDetail(el.getAttribute('data-key')); });
   });
+
+  attachDexSwipe();
+}
+
+function turnDexPage(delta){
+  DEX_PAGE = (DEX_PAGE + EGG_GROUPS.length + delta) % EGG_GROUPS.length;
+  renderDexView();
+  const book = document.querySelector('.dex-book');
+  if (book){
+    book.classList.remove('turn-left', 'turn-right');
+    void book.offsetWidth;                       // restart the animation
+    book.classList.add(delta > 0 ? 'turn-left' : 'turn-right');
+  }
+}
+
+// Swipe the book sideways to turn the page, like a real one. Only a mostly
+// horizontal drag counts, so scrolling the page vertically still works.
+function attachDexSwipe(){
+  const book = document.querySelector('.dex-book');
+  if (!book) return;
+  let x0 = null, y0 = null;
+
+  book.addEventListener('touchstart', function(e){
+    const tp = e.changedTouches[0];
+    x0 = tp.clientX; y0 = tp.clientY;
+  }, { passive:true });
+
+  book.addEventListener('touchend', function(e){
+    if (x0 === null) return;
+    const tp = e.changedTouches[0];
+    const dx = tp.clientX - x0, dy = tp.clientY - y0;
+    x0 = null; y0 = null;
+    if (Math.abs(dx) < 45) return;               // too small to be a swipe
+    if (Math.abs(dx) < Math.abs(dy) * 1.4) return;  // that was a vertical scroll
+    turnDexPage(dx < 0 ? 1 : -1);                // swipe left = next page
+  }, { passive:true });
 }
 
 function showDexDetail(key){

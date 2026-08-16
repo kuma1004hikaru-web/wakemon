@@ -250,18 +250,47 @@ function setTab(tab){
 
 // ⚙️ opens a small settings menu (language / reset) instead of jumping
 // straight to the destructive reset confirm.
+// Settings is a full screen of big tappable rows rather than a stack of
+// small modal buttons — easier to hit and to read for young players.
 function openSettings(){
-  openModal(
-    '⚙️',
-    t('lang.settings'),
-    '',
-    null, 'good', null,
-    [
-      { text: t('lang.settings'), action: function(){ openLangPicker(null); }, primary:true },
-      { text: t('common.settings'), action: resetAll, primary:false },
-      { text: t('common.close'), action: closeModal, primary:false }
-    ]
-  );
+  const rows = [
+    { id:'howto', icon:'📖', title:t('set.howto'),    sub:t('set.howtoSub') },
+    { id:'lang',  icon:'🌐', title:t('set.lang'),     sub:currentLangLabel() },
+    { id:'reset', icon:'🗑️', title:t('set.reset'),    sub:t('set.resetSub'), danger:true },
+  ];
+  let html = '';
+  rows.forEach(function(r){
+    html += '<button class="set-row'+(r.danger ? ' danger' : '')+'" data-set="'+r.id+'">' +
+      '<span class="set-icon">'+r.icon+'</span>' +
+      '<span class="set-text"><b>'+r.title+'</b><i>'+r.sub+'</i></span>' +
+      '<span class="set-arrow">›</span>' +
+    '</button>';
+  });
+
+  document.getElementById('modalRoot').innerHTML =
+    '<div class="set-overlay" id="setOverlay">' +
+      '<div class="set-head">' +
+        '<img class="set-gear" src="assets/ui/icon-settings.png" alt="" />' +
+        '<b>'+t('set.title')+'</b>' +
+      '</div>' +
+      html +
+      '<button class="primary-btn set-close" id="setCloseBtn">'+t('common.close')+'</button>' +
+    '</div>';
+
+  document.getElementById('setCloseBtn').addEventListener('click', closeModal);
+  document.querySelectorAll('[data-set]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      const id = btn.getAttribute('data-set');
+      if (id === 'lang')  openLangPicker(null);
+      if (id === 'reset') resetAll();
+      if (id === 'howto') showIntro2(true);   // straight to the rules
+    });
+  });
+}
+
+function currentLangLabel(){
+  const l = LANGS.filter(function(x){ return x.code === LANG; })[0];
+  return l ? l.label : '';
 }
 
 function resetAll(){
@@ -301,10 +330,13 @@ function showIntro(){
     t('intro.title'),
     t('intro.body'),
     null, 'good', null,
-    [{ text:t('intro.see'), action: showIntro2, primary:true }]
+    [{ text:t('intro.see'), action: function(){ showIntro2(false); }, primary:true }]
   );
 }
-function showIntro2(){
+
+// fromSettings: opened later from ⚙️ rather than during the first run, so
+// closing it just goes back instead of starting the egg picker.
+function showIntro2(fromSettings){
   document.getElementById('modalRoot').innerHTML =
     '<div class="modal-overlay"><div class="modal-card">' +
       '<div class="modal-eyebrow">'+t('howto.eyebrow')+'</div>' +
@@ -317,12 +349,13 @@ function showIntro2(){
         '<li>'+t('howto.5')+'</li>' +
         '<li>'+t('howto.6')+'</li>' +
       '</ul>' +
-      '<button class="primary-btn" id="introCloseBtn">'+t('howto.start')+'</button>' +
+      '<button class="primary-btn" id="introCloseBtn">' +
+        (fromSettings ? t('common.close') : t('howto.start')) + '</button>' +
     '</div></div>';
   document.getElementById('introCloseBtn').addEventListener('click', function(){
     closeModal();
-    // first run: straight from "how to play" into picking the first egg
-    setTimeout(maybeShowEggPicker, 200);
+    if (fromSettings) openSettings();          // back to the settings screen
+    else setTimeout(maybeShowEggPicker, 200);  // first run: on to the egg picker
   });
 }
 

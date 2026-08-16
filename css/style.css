@@ -374,6 +374,41 @@
     text-align:center; padding-top:8px;
   }
 
+  /* ---- settings screen (big tap targets) ---- */
+  .set-overlay{
+    position:fixed; inset:0; z-index:88;
+    background:
+      radial-gradient(circle at 20% 0%, #E7F3E9 0%, transparent 50%),
+      var(--paper);
+    display:flex; flex-direction:column; justify-content:center;
+    padding:calc(16px + env(safe-area-inset-top)) 16px calc(16px + env(safe-area-inset-bottom));
+    gap:10px; overflow-y:auto;
+  }
+  .set-head{ display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:6px; }
+  .set-gear{ width:38px; height:38px; object-fit:contain; }
+  .set-head b{
+    font-family:'Zen Maru Gothic',sans-serif; font-weight:900;
+    font-size:clamp(20px, 6vw, 26px); color:var(--pine-dark);
+  }
+  .set-row{
+    display:flex; align-items:center; gap:12px; width:100%;
+    background:var(--card); border:2.5px solid var(--line); border-radius:18px;
+    padding:16px 14px; cursor:pointer; text-align:left;
+    box-shadow:var(--shadow); transition:transform .12s ease, border-color .12s ease;
+  }
+  .set-row:active{ transform:scale(0.97); }
+  .set-row.danger{ border-color:#F0C2B4; }
+  .set-icon{ font-size:26px; flex:0 0 auto; }
+  .set-text{ flex:1 1 auto; min-width:0; display:flex; flex-direction:column; gap:3px; }
+  .set-text b{
+    font-family:'Zen Maru Gothic',sans-serif; font-weight:700;
+    font-size:clamp(15px, 4.4vw, 18px); color:var(--ink); line-height:1.3;
+  }
+  .set-text i{ font-style:normal; font-size:11px; color:var(--ink-soft); line-height:1.4; }
+  .set-row.danger .set-text b{ color:#8C3116; }
+  .set-arrow{ flex:0 0 auto; font-size:22px; color:var(--ink-soft); opacity:0.6; }
+  .set-close{ margin-top:6px; }
+
   /* ---- language picker ---- */
   .lang-overlay{ z-index:90; }
   .lang-grid{
@@ -864,6 +899,20 @@
     transition:transform .12s ease;
   }
   .page-turn:active{ transform:scale(0.85); }
+  /* page-turn feedback for swiping */
+  .dex-book.turn-left{ animation:page-turn-left .28s ease; }
+  .dex-book.turn-right{ animation:page-turn-right .28s ease; }
+  @keyframes page-turn-left{
+    0%{ transform:translateX(28px); opacity:0.35; }
+    100%{ transform:translateX(0); opacity:1; }
+  }
+  @keyframes page-turn-right{
+    0%{ transform:translateX(-28px); opacity:0.35; }
+    100%{ transform:translateX(0); opacity:1; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .dex-book.turn-left, .dex-book.turn-right{ animation:none; }
+  }
   .page-turn.prev{ left:6px; }
   .page-turn.next{ right:18px; }
 
