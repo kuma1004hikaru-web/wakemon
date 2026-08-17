@@ -459,6 +459,16 @@
     font-size:8.5px; color:#E4572E; background:rgba(255,255,255,0.85);
     padding:1px 5px; border-radius:6px;
   }
+  /* 目標(440g)の線。平均の線とラベルがぶつからないよう左側に出す */
+  .week-goal-line{
+    position:absolute; left:0; right:0; height:0;
+    border-top:2px dashed #3FB05A; opacity:0.85; pointer-events:none;
+  }
+  .week-goal-line span{
+    position:absolute; left:0; top:-16px;
+    font-size:8.5px; color:#2E7D46; background:rgba(255,255,255,0.85);
+    padding:1px 5px; border-radius:6px; font-weight:700;
+  }
   .week-note{
     margin-top:12px; font-size:11px; line-height:1.7; color:var(--ink-soft);
     background:#F4F7EF; border-radius:12px; padding:9px 12px;

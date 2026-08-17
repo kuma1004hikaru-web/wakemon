@@ -27,10 +27,12 @@ const WASTE_CATEGORIES = [
 ];
 
 // 環境省「一般廃棄物の排出及び処理状況等（令和5年度）」より
-// 家庭から出るごみは全国平均で 1人1日あたり 475g
-const SOFT_LIMIT_G = 475;         // national average (household waste, per person/day)
-const HARD_LIMIT_G = SOFT_LIMIT_G * 2; // 2x average — danger zone
-const AVG_SOURCE_LABEL = '環境省(令和5年度)調べ：家庭ごみの全国平均は1人1日475g';
+// 家庭から出るごみは全国平均で 1人1日あたり 475g（比べる目安として残す）
+const AVG_G = 475;                // national average — reference line only
+// 国の目標（第四次循環型社会形成推進基本計画）：家庭系ごみ 1人1日 440g
+const TARGET_G = 440;             // the goal the player should stay under
+const SOFT_LIMIT_G = TARGET_G;    // warnings and the gauge marker follow the goal
+const HARD_LIMIT_G = AVG_G * 2;   // 2x the average (950g) — danger zone
 
 // えさやりクイズに出てくる具体的なごみ。categoryId が正解の分別先で、
 // grams はそのごみ1つぶんのだいたいの重さ。

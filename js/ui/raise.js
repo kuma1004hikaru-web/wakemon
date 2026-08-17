@@ -92,7 +92,7 @@ function renderSceneStats(){
       '<div class="stat-fill" style="width:'+gaugePct+'%; background:'+gaugeColor+';"></div>' +
       '<div class="gauge-marker" style="left:'+markerPct+'%;"></div>' +
     '</div>' +
-    '<div class="stat-caption">'+t('stats.avgCaption', { g: formatGrams(SOFT_LIMIT_G) })+'</div>' +
+    '<div class="stat-caption">'+t('stats.goalCaption', { g: formatGrams(TARGET_G), avg: formatGrams(AVG_G) })+'</div>' +
   '</div>' +
   '<div class="stat-row">' +
     '<div class="stat-label"><span>'+t('stats.pollution')+'</span><span>'+Math.round(STATE.pollution)+' / 100</span></div>' +
@@ -217,7 +217,8 @@ function maybeShowEggPicker(){
 
 /* ============================================================
    Weekly trash log: bar chart of grams per real calendar day for
-   the last 7 days, with the national-average line for scale.
+   the last 7 days, with the goal line (440g) and the national-average
+   line (475g) for scale.
    ============================================================ */
 function weekBarColor(v){
   if (v > HARD_LIMIT_G) return '#E4572E';
@@ -228,8 +229,9 @@ function weekBarColor(v){
 function renderWeeklyChart(){
   const keys = lastNDateKeys(7);
   const values = keys.map(function(k){ return DAILY_LOG[k] || 0; });
-  const maxV = values.reduce(function(a,b){ return Math.max(a,b); }, SOFT_LIMIT_G) * 1.15;
-  const avgPct = Math.round((SOFT_LIMIT_G / maxV) * 100);
+  const maxV = values.reduce(function(a,b){ return Math.max(a,b); }, AVG_G) * 1.15;
+  const goalPct = Math.round((TARGET_G / maxV) * 100);
+  const avgPct = Math.round((AVG_G / maxV) * 100);
 
   let cols = '';
   keys.forEach(function(k, i){
@@ -247,10 +249,11 @@ function renderWeeklyChart(){
 
   return '' +
     '<div class="week-chart">' +
-      '<div class="week-avg-line" style="bottom:'+avgPct+'%;"><span>'+t('week.avg', { g: formatGrams(SOFT_LIMIT_G) })+'</span></div>' +
+      '<div class="week-avg-line" style="bottom:'+avgPct+'%;"><span>'+t('week.avg', { g: formatGrams(AVG_G) })+'</span></div>' +
+      '<div class="week-goal-line" style="bottom:'+goalPct+'%;"><span>'+t('week.goal', { g: formatGrams(TARGET_G) })+'</span></div>' +
       cols +
     '</div>' +
-    '<div class="stat-caption">'+AVG_SOURCE_LABEL+'</div>';
+    '<div class="stat-caption">'+t('week.source')+'</div>';
 }
 
 // 先週とくらべて、減らせたかどうかを一行で。
